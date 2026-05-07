@@ -1,0 +1,239 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import '../models/bus_model.dart';
+import '../models/terminal_model.dart';
+
+class BusApiService {
+  static const _baseUrl = 'http://apis.data.go.kr/1613000/SuburbsBusInfo';
+
+  static String get _apiKey => dotenv.env['BUS_API_KEY'] ?? '';
+
+  static List<Terminal>? _cachedTerminals;
+
+  static Future<List<Terminal>> getTerminals() async {
+    if (_cachedTerminals != null) return _cachedTerminals!;
+
+    try {
+      final all = <Terminal>[];
+      int pageNo = 1;
+      int totalCount = 0;
+      const pageSize = 100;
+
+      do {
+        final uri = Uri.parse('$_baseUrl/GetSuberbsBusTrminlList').replace(
+          queryParameters: {
+            'serviceKey': _apiKey,
+            'pageNo': '$pageNo',
+            'numOfRows': '$pageSize',
+            '_type': 'json',
+          },
+        );
+
+        debugPrint('[API] 터미널 페이지$pageNo 요청');
+        final response =
+            await http.get(uri).timeout(const Duration(seconds: 10));
+
+        if (response.statusCode != 200) break;
+
+        final data = json.decode(response.body);
+
+        if (totalCount == 0) {
+          totalCount = data['response']?['body']?['totalCount'] ?? 0;
+          debugPrint('[API] 터미널 총 $totalCount개');
+        }
+
+        final items = _extractItems(data);
+        if (items == null || items.isEmpty) break;
+
+        all.addAll(items.map((e) => Terminal.fromJson(e)));
+        pageNo++;
+      } while (all.length < totalCount);
+
+      if (all.isNotEmpty) {
+        _cachedTerminals = all;
+        debugPrint('[API] 터미널 ${all.length}개 로드 완료');
+        for (final t in all) {
+          debugPrint('  ${t.id} : ${t.name}');
+        }
+        return _cachedTerminals!;
+      }
+    } catch (e) {
+      debugPrint('[API] 터미널 오류: $e');
+    }
+
+    debugPrint('[API] fallback 터미널 사용');
+    return _fallbackTerminals;
+  }
+
+  static Future<List<Bus>> getSchedules({
+    required String depTerminalId,
+    required String arrTerminalId,
+    required String depTerminalName,
+    required String arrTerminalName,
+    required DateTime date,
+  }) async {
+    final dateStr = DateFormat('yyyyMMdd').format(date);
+
+    try {
+      final uri =
+          Uri.parse('$_baseUrl/GetStrtpntAlocFndSuberbsBusInfo').replace(
+        queryParameters: {
+          'serviceKey': _apiKey,
+          'pageNo': '1',
+          'numOfRows': '100',
+          '_type': 'json',
+          'depTerminalId': depTerminalId,
+          'arrTerminalId': arrTerminalId,
+          'depPlandTime': dateStr,
+        },
+      );
+
+      debugPrint('[API] 스케줄 요청: ${uri.toString().replaceAll(_apiKey, '***')}');
+
+      final response =
+          await http.get(uri).timeout(const Duration(seconds: 10));
+
+      debugPrint('[API] 스케줄 응답 코드: ${response.statusCode}');
+      debugPrint('[API] 스케줄 응답(앞800자): ${response.body.substring(0, response.body.length.clamp(0, 800))}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final totalCount = data['response']?['body']?['totalCount'] ?? 0;
+        debugPrint('[API] 스케줄 totalCount: $totalCount');
+
+        final items = _extractItems(data);
+        if (items != null && items.isNotEmpty) {
+          final buses = items
+              .map((e) => _scheduleToBus(e, depTerminalName, arrTerminalName))
+              .toList();
+          debugPrint('[API] ${buses.length}편 파싱 완료');
+          return buses;
+        }
+        return [];
+      }
+    } catch (e) {
+      debugPrint('[API] 스케줄 오류: $e');
+      rethrow;
+    }
+
+    return [];
+  }
+
+  static Bus _scheduleToBus(
+    Map<String, dynamic> json,
+    String from,
+    String to,
+  ) {
+    final depTime = _parseTime(json['depPlandTime']?.toString());
+    final arrTime = _parseTime(json['arrPlandTime']?.toString());
+    final gradeNm = json['gradeNm']?.toString() ?? '일반';
+    final busType = switch (gradeNm) {
+      '우등' => '우등',
+      '프리미엄' => '프리미엄',
+      _ => '일반',
+    };
+    final totalSeats = switch (busType) {
+      '우등' => 27,
+      '프리미엄' => 21,
+      _ => 44,
+    };
+    final routeId = json['routeId']?.toString() ?? '';
+    final remaining = _calcRemaining(totalSeats, depTime, routeId);
+
+    return Bus(
+      id: json['routeId']?.toString() ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
+      from: json['depPlaceNm']?.toString() ?? from,
+      to: json['arrPlaceNm']?.toString() ?? to,
+      departureTime: depTime,
+      arrivalTime: arrTime,
+      price: int.tryParse(json['charge']?.toString() ?? '0') ?? 0,
+      totalSeats: totalSeats,
+      remainingSeats: remaining,
+      busType: busType,
+      company: '',
+    );
+  }
+
+  // routeId + 날짜 기반 결정론적 잔여석 계산 (같은 노선/날짜 = 항상 같은 값)
+  static int _calcRemaining(int total, DateTime dep, String routeId) {
+    final seed = routeId.hashCode ^
+        dep.year ^
+        (dep.month << 8) ^
+        (dep.day << 16) ^
+        (dep.hour << 20);
+    final rng = Random(seed);
+
+    final hour = dep.hour;
+    final weekday = dep.weekday; // 1=월 ~ 7=일
+
+    double occupancyRate;
+    if (weekday == 5 || weekday == 7) {
+      // 금요일·일요일: 혼잡
+      if (hour >= 15 && hour <= 21) {
+        occupancyRate = 0.75 + rng.nextDouble() * 0.22; // 75~97%
+      } else {
+        occupancyRate = 0.55 + rng.nextDouble() * 0.30; // 55~85%
+      }
+    } else if (weekday == 6) {
+      // 토요일
+      occupancyRate = 0.50 + rng.nextDouble() * 0.35; // 50~85%
+    } else if ((hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19)) {
+      // 평일 출퇴근
+      occupancyRate = 0.50 + rng.nextDouble() * 0.35; // 50~85%
+    } else if (hour >= 22 || hour <= 6) {
+      // 심야·새벽
+      occupancyRate = 0.10 + rng.nextDouble() * 0.30; // 10~40%
+    } else {
+      // 평일 낮
+      occupancyRate = 0.20 + rng.nextDouble() * 0.40; // 20~60%
+    }
+
+    final occupied = (total * occupancyRate).round().clamp(0, total);
+    return (total - occupied).clamp(0, total);
+  }
+
+  // 형식: YYYYMMDDHHmm (12자리)
+  static DateTime _parseTime(String? raw) {
+    if (raw == null || raw.length < 12) return DateTime.now();
+    try {
+      return DateTime(
+        int.parse(raw.substring(0, 4)),
+        int.parse(raw.substring(4, 6)),
+        int.parse(raw.substring(6, 8)),
+        int.parse(raw.substring(8, 10)),
+        int.parse(raw.substring(10, 12)),
+      );
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+
+  static List<Map<String, dynamic>>? _extractItems(dynamic data) {
+    try {
+      final items = data['response']['body']['items']['item'];
+      if (items is List) return items.cast<Map<String, dynamic>>();
+      if (items is Map) return [items.cast<String, dynamic>()];
+    } catch (_) {}
+    return null;
+  }
+
+  static List<Terminal> get _fallbackTerminals => const [
+        Terminal(id: 'NAI0671801', name: '서울', cityName: '서울'),
+        Terminal(id: 'NAI3214401', name: '부산', cityName: '부산'),
+        Terminal(id: 'NAI2810101', name: '대구', cityName: '대구'),
+        Terminal(id: 'NAI2920101', name: '광주', cityName: '광주'),
+        Terminal(id: 'NAI3020101', name: '대전', cityName: '대전'),
+        Terminal(id: 'NAI2810901', name: '울산', cityName: '울산'),
+        Terminal(id: 'NAI0600201', name: '인천', cityName: '인천'),
+        Terminal(id: 'NAI0600101', name: '수원', cityName: '수원'),
+        Terminal(id: 'NAI0820101', name: '춘천', cityName: '춘천'),
+        Terminal(id: 'NAI0610101', name: '전주', cityName: '전주'),
+        Terminal(id: 'NAI0710101', name: '청주', cityName: '청주'),
+        Terminal(id: 'NAI0700101', name: '강릉', cityName: '강릉'),
+      ];
+}
