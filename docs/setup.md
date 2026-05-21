@@ -1,0 +1,105 @@
+# 개발 환경 설정 가이드
+
+## 필수 설치 항목
+
+| 도구 | 버전 | 다운로드 |
+|---|---|---|
+| Flutter SDK | 3.11.5 이상 | https://flutter.dev |
+| Dart | 3.x (Flutter 포함) | Flutter 설치 시 자동 포함 |
+| Android Studio | 최신 | https://developer.android.com/studio |
+| VS Code | 최신 | https://code.visualstudio.com |
+| Git | 최신 | https://git-scm.com |
+
+---
+
+## 1. Flutter 설치 확인
+
+```bash
+flutter --version
+flutter doctor
+```
+
+`flutter doctor` 결과에서 Android SDK, Connected device 항목에 체크 표시 확인
+
+---
+
+## 2. 프로젝트 클론
+
+```bash
+git clone https://github.com/minsung6167/Bus_app.git
+cd Bus_app
+```
+
+---
+
+## 3. 패키지 설치
+
+```bash
+flutter pub get
+```
+
+`pubspec.yaml` 기준 주요 패키지:
+
+| 패키지 | 용도 |
+|---|---|
+| `provider` | 전역 상태 관리 |
+| `shared_preferences` | 로컬 영구 저장 |
+| `http` | 공공 API 호출 |
+| `intl` | 날짜·숫자 포맷 |
+| `flutter_dotenv` | 환경변수 관리 |
+
+---
+
+## 4. 환경변수 설정
+
+프로젝트 루트에 `.env` 파일 생성:
+
+```
+BUS_API_KEY=발급받은_공공API_키
+```
+
+공공 API 키 발급: 공공데이터포털 (data.go.kr) → 시외버스 API 신청
+
+---
+
+## 5. 실행
+
+```bash
+# 연결된 기기 확인
+flutter devices
+
+# 앱 실행
+flutter run
+
+# 특정 기기 지정 실행
+flutter run -d <device_id>
+```
+
+---
+
+## 6. 빌드
+
+```bash
+# Android APK
+flutter build apk --release
+
+# Android App Bundle
+flutter build appbundle --release
+
+# iOS (Mac 환경 필요)
+flutter build ios --release
+```
+
+빌드 결과물 위치:
+- APK: `build/app/outputs/flutter-apk/app-release.apk`
+- AAB: `build/app/outputs/bundle/release/app-release.aab`
+
+---
+
+## 트러블슈팅
+
+| 문제 | 해결 |
+|---|---|
+| `flutter doctor` 오류 | Android SDK 라이선스 동의: `flutter doctor --android-licenses` |
+| 패키지 충돌 | `flutter clean && flutter pub get` |
+| API 데이터 안 불러와짐 | `.env` 키 확인 또는 fallback 모드 동작 중 |
