@@ -2,25 +2,21 @@
 
 ## 전체 구조
 
-```
-┌─────────────────────────────────────┐
-│            Flutter App              │
-│                                     │
-│  ┌──────────┐    ┌──────────────┐   │
-│  │  Screens │───▶│  Providers   │   │
-│  └──────────┘    └──────┬───────┘   │
-│                         │           │
-│  ┌──────────────────────▼───────┐   │
-│  │         Services             │   │
-│  │  (BusApiService)             │   │
-│  └──────────┬───────────────────┘   │
-│             │                       │
-└─────────────┼───────────────────────┘
-              │
-    ┌─────────▼──────────┐
-    │   공공 API          │
-    │ (data.go.kr)       │
-    └────────────────────┘
+```mermaid
+graph TD
+    subgraph Flutter App
+        A[Screens / Widgets] -->|context.read| B[Providers]
+        B -->|notifyListeners| A
+        B --> C[Services]
+        B --> D[(SharedPreferences)]
+    end
+
+    C -->|HTTP GET| E[공공 API\ndata.go.kr]
+    C -->|fallback| F[mock_data.dart]
+
+    style Flutter App fill:#e8f4fd,stroke:#2196F3
+    style E fill:#fff3e0,stroke:#FF9800
+    style F fill:#f3e5f5,stroke:#9C27B0
 ```
 
 ---

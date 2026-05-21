@@ -12,6 +12,46 @@
 
 ---
 
+## OS별 Flutter 설치
+
+### Windows
+
+```powershell
+# winget으로 설치 (권장)
+winget install Google.Flutter
+
+# 또는 공식 zip 다운로드 후 PATH 추가
+# C:\flutter\bin 을 시스템 환경변수 PATH에 추가
+[System.Environment]::SetEnvironmentVariable(
+  "Path",
+  $env:Path + ";C:\flutter\bin",
+  [System.EnvironmentVariableTarget]::User
+)
+```
+
+### macOS
+
+```bash
+# Homebrew로 설치 (권장)
+brew install --cask flutter
+
+# 또는 공식 zip 다운로드 후 PATH 추가
+export PATH="$HOME/flutter/bin:$PATH"
+# ~/.zshrc 또는 ~/.bash_profile에 위 줄 추가 후 source
+```
+
+### Linux (Ubuntu/Debian)
+
+```bash
+# snap으로 설치 (권장)
+sudo snap install flutter --classic
+
+# 의존 패키지 설치
+sudo apt update && sudo apt install -y git curl unzip xz-utils zip libglu1-mesa clang cmake ninja-build pkg-config libgtk-3-dev
+```
+
+---
+
 ## 1. Flutter 설치 확인
 
 ```bash
