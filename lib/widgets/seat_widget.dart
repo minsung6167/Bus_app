@@ -12,21 +12,53 @@ class SeatWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color bgColor;
     final Color borderColor;
-    final Color textColor;
 
     switch (seat.status) {
       case SeatStatus.available:
         bgColor = AppColors.seatAvailable;
         borderColor = AppColors.seatAvailableBorder;
-        textColor = const Color(0xFF16A34A);
       case SeatStatus.occupied:
         bgColor = AppColors.seatOccupied;
         borderColor = AppColors.seatOccupiedBorder;
-        textColor = const Color(0xFFDC2626);
       case SeatStatus.selected:
         bgColor = AppColors.seatSelected;
         borderColor = AppColors.seatSelected;
-        textColor = Colors.white;
+    }
+
+    Widget child;
+    if (seat.isSelected) {
+      child = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            seat.passengerTypeShort,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          Text(
+            seat.label,
+            style: const TextStyle(
+              fontSize: 8,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      );
+    } else {
+      child = Text(
+        seat.label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: seat.isOccupied
+              ? const Color(0xFFDC2626)
+              : const Color(0xFF16A34A),
+        ),
+      );
     }
 
     return GestureDetector(
@@ -41,14 +73,7 @@ class SeatWidget extends StatelessWidget {
           border: Border.all(color: borderColor, width: 1.5),
         ),
         alignment: Alignment.center,
-        child: Text(
-          seat.label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: textColor,
-          ),
-        ),
+        child: child,
       ),
     );
   }

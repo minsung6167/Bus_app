@@ -102,10 +102,12 @@ class BusApiService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final resultCode = data['response']?['header']?['resultCode'];
         final totalCount = data['response']?['body']?['totalCount'] ?? 0;
-        debugPrint('[API] 스케줄 totalCount: $totalCount');
+        debugPrint('[API] 스케줄 resultCode: $resultCode, totalCount: $totalCount');
 
         final items = _extractItems(data);
+        debugPrint('[API] 파싱된 아이템 수: ${items?.length ?? 0}');
         if (items != null && items.isNotEmpty) {
           final buses = items
               .map((e) => _scheduleToBus(e, depTerminalName, arrTerminalName))
@@ -115,8 +117,8 @@ class BusApiService {
         }
         return [];
       }
-    } catch (e) {
-      debugPrint('[API] 스케줄 오류: $e');
+    } catch (e, st) {
+      debugPrint('[API] 스케줄 오류: $e\n$st');
       rethrow;
     }
 
@@ -144,9 +146,11 @@ class BusApiService {
     final routeId = json['routeId']?.toString() ?? '';
     final remaining = _calcRemaining(totalSeats, depTime, routeId);
 
+    final depPlandTime = json['depPlandTime']?.toString() ?? '';
     return Bus(
-      id: json['routeId']?.toString() ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
+      id: '${routeId}_$depPlandTime'.isNotEmpty
+          ? '${routeId}_$depPlandTime'
+          : DateTime.now().millisecondsSinceEpoch.toString(),
       from: json['depPlaceNm']?.toString() ?? from,
       to: json['arrPlaceNm']?.toString() ?? to,
       departureTime: depTime,
@@ -215,25 +219,47 @@ class BusApiService {
 
   static List<Map<String, dynamic>>? _extractItems(dynamic data) {
     try {
-      final items = data['response']['body']['items']['item'];
-      if (items is List) return items.cast<Map<String, dynamic>>();
-      if (items is Map) return [items.cast<String, dynamic>()];
-    } catch (_) {}
+      final body = data['response']['body'];
+      final rawItems = body['items'];
+
+      // items가 빈 문자열이면 결과 없음
+      if (rawItems is String) return null;
+
+      // items.item 구조 (표준 공공데이터 형식)
+      if (rawItems is Map) {
+        final item = rawItems['item'];
+        if (item is List) return item.cast<Map<String, dynamic>>();
+        if (item is Map) return [item.cast<String, dynamic>()];
+      }
+
+      // items가 직접 List인 경우
+      if (rawItems is List) return rawItems.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('[API] _extractItems 파싱 오류: $e');
+    }
     return null;
   }
 
   static List<Terminal> get _fallbackTerminals => const [
-        Terminal(id: 'NAI0671801', name: '서울', cityName: '서울'),
-        Terminal(id: 'NAI3214401', name: '부산', cityName: '부산'),
-        Terminal(id: 'NAI2810101', name: '대구', cityName: '대구'),
-        Terminal(id: 'NAI2920101', name: '광주', cityName: '광주'),
-        Terminal(id: 'NAI3020101', name: '대전', cityName: '대전'),
-        Terminal(id: 'NAI2810901', name: '울산', cityName: '울산'),
-        Terminal(id: 'NAI0600201', name: '인천', cityName: '인천'),
-        Terminal(id: 'NAI0600101', name: '수원', cityName: '수원'),
-        Terminal(id: 'NAI0820101', name: '춘천', cityName: '춘천'),
-        Terminal(id: 'NAI0610101', name: '전주', cityName: '전주'),
-        Terminal(id: 'NAI0710101', name: '청주', cityName: '청주'),
-        Terminal(id: 'NAI0700101', name: '강릉', cityName: '강릉'),
+        Terminal(id: 'NAI0671801', name: '서울남부', cityName: '서울'),
+        Terminal(id: 'NAI0511601', name: '동서울', cityName: '서울'),
+        Terminal(id: 'NAI0215101', name: '상봉', cityName: '서울'),
+        Terminal(id: 'NAI4696901', name: '부산서부(사상)', cityName: '부산'),
+        Terminal(id: 'NAI4620401', name: '부산동부', cityName: '부산'),
+        Terminal(id: 'NAI4248201', name: '대구서부', cityName: '대구'),
+        Terminal(id: 'NAI6193701', name: '광주(유·스퀘어)', cityName: '광주'),
+        Terminal(id: 'NAI3455101', name: '대전복합', cityName: '대전'),
+        Terminal(id: 'NAI4472001', name: '울산', cityName: '울산'),
+        Terminal(id: 'NAI2224201', name: '인천', cityName: '인천'),
+        Terminal(id: 'NAI1658501', name: '수원터미널', cityName: '수원'),
+        Terminal(id: 'NAI2443501', name: '춘천', cityName: '춘천'),
+        Terminal(id: 'NAI5493301', name: '전주시외터미널', cityName: '전주'),
+        Terminal(id: 'NAI2839701', name: '청주', cityName: '청주'),
+        Terminal(id: 'NAI2551901', name: '강릉', cityName: '강릉'),
+        Terminal(id: 'NAI2482701', name: '속초', cityName: '속초'),
+        Terminal(id: 'NAI5302001', name: '통영터미널', cityName: '통영'),
+        Terminal(id: 'NAI5275901', name: '진주', cityName: '진주'),
+        Terminal(id: 'NAI5796001', name: '순천', cityName: '순천'),
+        Terminal(id: 'NAI5864201', name: '목포', cityName: '목포'),
       ];
 }

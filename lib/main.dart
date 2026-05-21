@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
 import 'providers/booking_provider.dart';
+import 'providers/favorite_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -17,24 +20,51 @@ class BusApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => BookingProvider(),
-      child: MaterialApp(
-        title: '버스티켓',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.theme,
-        locale: const Locale('ko', 'KR'),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('ko', 'KR'),
-          Locale('en', 'US'),
-        ],
-        home: const MainScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()..init()),
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => FavoriteProvider()..init()),
+      ],
+      child: Consumer<LanguageProvider>(
+        builder: (ctx, langProvider, _) => MaterialApp(
+          title: '버스티켓',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.theme,
+          locale: Locale(langProvider.langCode),
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ko', 'KR'),
+            Locale('en', 'US'),
+            Locale('zh'),
+            Locale('ja'),
+          ],
+          home: const _AuthGate(),
+        ),
       ),
     );
+  }
+}
+
+class _AuthGate extends StatelessWidget {
+  const _AuthGate();
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
+    // 초기화 중 스플래시
+    if (auth.isInitializing) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return MainScreen(key: mainScreenKey);
   }
 }

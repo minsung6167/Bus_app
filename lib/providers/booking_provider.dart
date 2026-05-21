@@ -10,6 +10,13 @@ class BookingProvider extends ChangeNotifier {
   final List<Seat> selectedSeats = [];
   final List<Booking> bookings = [];
 
+  final Map<String, int> _bookedSeatsMap = {};
+
+  int effectiveRemaining(Bus bus) {
+    final booked = _bookedSeatsMap[bus.id] ?? 0;
+    return (bus.remainingSeats - booked).clamp(0, bus.totalSeats);
+  }
+
   void selectBus(Bus bus) {
     selectedBus = bus;
     selectedSeats.clear();
@@ -22,7 +29,6 @@ class BookingProvider extends ChangeNotifier {
     final cols = _getColumns(bus.busType);
     final rows = _getRows(bus.busType);
 
-    // 노선ID + 출발일시 기반 시드 → 같은 버스는 항상 같은 좌석 배치
     final dep = bus.departureTime;
     final seed = bus.id.hashCode ^
         dep.year ^
@@ -33,7 +39,6 @@ class BookingProvider extends ChangeNotifier {
 
     final occupied = bus.totalSeats - bus.remainingSeats;
 
-    // 점유 좌석을 랜덤하게 미리 선정 (앞자리 쏠림 방지)
     final allSeatIds = <String>[];
     for (int r = 1; r <= rows; r++) {
       for (final col in cols) {
@@ -82,16 +87,39 @@ class BookingProvider extends ChangeNotifier {
     }
   }
 
-  void toggleSeat(Seat seat) {
+  // 좌석 선택 (유형 포함)
+  void selectSeat(Seat seat, PassengerType type) {
     if (seat.isOccupied) return;
-    if (seat.isSelected) {
-      seat.status = SeatStatus.available;
-      selectedSeats.remove(seat);
-    } else {
-      seat.status = SeatStatus.selected;
+    seat.status = SeatStatus.selected;
+    seat.passengerType = type;
+    if (!selectedSeats.contains(seat)) {
       selectedSeats.add(seat);
     }
     notifyListeners();
+  }
+
+  // 좌석 해제
+  void deselectSeat(Seat seat) {
+    seat.status = SeatStatus.available;
+    seat.passengerType = PassengerType.general;
+    selectedSeats.remove(seat);
+    notifyListeners();
+  }
+
+  // 유형별 인원수
+  int get generalCount =>
+      selectedSeats.where((s) => s.passengerType == PassengerType.general).length;
+  int get studentCount =>
+      selectedSeats.where((s) => s.passengerType == PassengerType.student).length;
+  int get childCount =>
+      selectedSeats.where((s) => s.passengerType == PassengerType.child).length;
+
+  // 유형별 가격 적용 합계
+  int get totalPrice {
+    final base = selectedBus?.price ?? 0;
+    return selectedSeats.fold(0, (sum, seat) {
+      return sum + (base * seat.priceMultiplier).round();
+    });
   }
 
   Booking createBooking({
@@ -104,19 +132,20 @@ class BookingProvider extends ChangeNotifier {
       seats: selectedSeats.map((s) => s.label).toList(),
       passengerName: passengerName,
       passengerPhone: passengerPhone,
-      totalPrice: selectedBus!.price * selectedSeats.length,
+      totalPrice: totalPrice,
       bookedAt: DateTime.now(),
     );
     bookings.add(booking);
+    _bookedSeatsMap[selectedBus!.id] =
+        (_bookedSeatsMap[selectedBus!.id] ?? 0) + selectedSeats.length;
     notifyListeners();
     return booking;
   }
 
-  int get totalPrice => (selectedBus?.price ?? 0) * selectedSeats.length;
-
   void clearSelection() {
     for (final seat in selectedSeats) {
       seat.status = SeatStatus.available;
+      seat.passengerType = PassengerType.general;
     }
     selectedSeats.clear();
     notifyListeners();
