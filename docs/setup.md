@@ -92,13 +92,26 @@ flutter pub get
 
 ## 4. 환경변수 설정
 
-프로젝트 루트에 `.env` 파일 생성:
+`.env.example`을 복사해서 `.env` 파일 생성:
+
+```bash
+# macOS / Linux
+cp .env.example .env
+
+# Windows (PowerShell)
+Copy-Item .env.example .env
+```
+
+`.env` 파일을 열어 실제 키 입력:
 
 ```
 BUS_API_KEY=발급받은_공공API_키
 ```
 
-공공 API 키 발급: 공공데이터포털 (data.go.kr) → 시외버스 API 신청
+각 키의 의미:
+- `BUS_API_KEY` — 공공데이터포털 (data.go.kr) → 시외버스 운행정보 서비스 신청 후 발급
+
+> `.env` 파일은 절대 커밋하지 마세요 (`.gitignore`에 등록됨)
 
 ---
 
