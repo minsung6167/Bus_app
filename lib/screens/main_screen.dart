@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 import '../providers/language_provider.dart';
+import '../theme/app_theme.dart';
+import 'chatbot_screen.dart';
 import 'home_screen.dart';
 import 'my_bookings_screen.dart';
 import 'my_page_screen.dart';
@@ -35,6 +37,14 @@ class MainScreenState extends State<MainScreen> {
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+        ),
+        backgroundColor: AppColors.primary,
+        tooltip: '고객센터 챗봇',
+        child: const Icon(Icons.support_agent, color: Colors.white),
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
