@@ -297,40 +297,44 @@ class _MobileTicketDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 48, vertical: 80),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '모바일발권 안내',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Container(height: 2, color: Colors.red),
-            const SizedBox(height: 20),
-            const Text(
-              '선택하신 노선은 현장 발권없이 스마트폰의 QR코드를 생성하여 차량 탑승 가능한 전자승차권 발권이 가능합니다. 예매 후 모바일 발권 받으셔서 편리하게 이용해보세요~',
-              style: TextStyle(fontSize: 15, color: Colors.black87, height: 1.6),
-            ),
-            const SizedBox(height: 24),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text(
-                  '확인',
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '모바일발권 안내',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 6),
+              Container(height: 2, color: Colors.red),
+              const SizedBox(height: 60),
+              const Text(
+                '선택하신 노선은 현장 발권없이 스마트폰의 QR코드를 생성하여 차량 탑승 가능한 전자승차권 발권이 가능합니다. 예매 후 모바일 발권 받으셔서 편리하게 이용해보세요~',
+                style: TextStyle(fontSize: 15, color: Colors.black87, height: 1.6),
+              ),
+              const SizedBox(height: 80),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
