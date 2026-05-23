@@ -118,7 +118,12 @@ class BusCard extends StatelessWidget {
                   _TimeBlock(time: timeFormat.format(bus.arrivalTime), label: TerminalNames.translate(bus.to, lang), isRight: true),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              _CongestionBar(
+                totalSeats: bus.totalSeats,
+                remainingSeats: remaining,
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Column(
@@ -172,6 +177,107 @@ class _TimeBlock extends StatelessWidget {
         Text(time,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+      ],
+    );
+  }
+}
+
+enum _CongestionLevel { comfortable, normal, congested, full }
+
+extension _CongestionLevelX on _CongestionLevel {
+  String label(String lang) => switch (this) {
+        _CongestionLevel.comfortable => lang == 'en' ? 'Comfortable' : lang == 'zh' ? '宽松' : lang == 'ja' ? '余裕' : '여유',
+        _CongestionLevel.normal      => lang == 'en' ? 'Normal'      : lang == 'zh' ? '普通' : lang == 'ja' ? '普通' : '보통',
+        _CongestionLevel.congested   => lang == 'en' ? 'Crowded'     : lang == 'zh' ? '拥挤' : lang == 'ja' ? '混雑' : '혼잡',
+        _CongestionLevel.full        => lang == 'en' ? 'Very Crowded': lang == 'zh' ? '非常拥挤' : lang == 'ja' ? '非常に混雑' : '매우혼잡',
+      };
+
+  Color get color => switch (this) {
+        _CongestionLevel.comfortable => const Color(0xFF16A34A),
+        _CongestionLevel.normal      => const Color(0xFFD97706),
+        _CongestionLevel.congested   => const Color(0xFFEA580C),
+        _CongestionLevel.full        => const Color(0xFFDC2626),
+      };
+
+  Color get bgColor => switch (this) {
+        _CongestionLevel.comfortable => const Color(0xFFDCFCE7),
+        _CongestionLevel.normal      => const Color(0xFFFEF3C7),
+        _CongestionLevel.congested   => const Color(0xFFFFEDD5),
+        _CongestionLevel.full        => const Color(0xFFFEE2E2),
+      };
+}
+
+class _CongestionBar extends StatelessWidget {
+  final int totalSeats;
+  final int remainingSeats;
+
+  const _CongestionBar({required this.totalSeats, required this.remainingSeats});
+
+  _CongestionLevel get _level {
+    if (totalSeats == 0) return _CongestionLevel.full;
+    final occupancy = (totalSeats - remainingSeats) / totalSeats;
+    if (occupancy < 0.3) return _CongestionLevel.comfortable;
+    if (occupancy < 0.6) return _CongestionLevel.normal;
+    if (occupancy < 0.8) return _CongestionLevel.congested;
+    return _CongestionLevel.full;
+  }
+
+  double get _fillRatio {
+    if (totalSeats == 0) return 1.0;
+    return ((totalSeats - remainingSeats) / totalSeats).clamp(0.0, 1.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().langCode;
+    final level = _level;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '혼잡도',
+              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              decoration: BoxDecoration(
+                color: level.bgColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                level.label(lang),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: level.color,
+                ),
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '${(_fillRatio * 100).toInt()}%',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: level.color,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: _fillRatio,
+            minHeight: 6,
+            backgroundColor: AppColors.divider,
+            valueColor: AlwaysStoppedAnimation<Color>(level.color),
+          ),
+        ),
       ],
     );
   }
