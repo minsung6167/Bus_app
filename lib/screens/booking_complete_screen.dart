@@ -7,6 +7,7 @@ import '../models/booking_model.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 import 'main_screen.dart';
+import 'sleep_mode_screen.dart';
 
 class BookingCompleteScreen extends StatelessWidget {
   final Booking booking;
@@ -134,6 +135,25 @@ class BookingCompleteScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SleepModeScreen(destTerminalName: booking.bus.to),
+                    ),
+                  ),
+                  icon: const Icon(Icons.nightlight_round, size: 18),
+                  label: const Text('수면 모드 설정', style: TextStyle(fontWeight: FontWeight.w600)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    foregroundColor: const Color(0xFF7C3AED),
+                    side: const BorderSide(color: Color(0xFF7C3AED)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
               ),
               const SizedBox(height: 8),
             ],

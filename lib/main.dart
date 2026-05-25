@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
@@ -7,10 +8,13 @@ import 'providers/booking_provider.dart';
 import 'providers/favorite_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/main_screen.dart';
+import 'services/sleep_mode_task.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterForegroundTask.initCommunicationPort();
+  initForegroundTask();
   await dotenv.load(fileName: '.env');
   runApp(const BusApp());
 }
