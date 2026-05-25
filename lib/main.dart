@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -13,8 +14,10 @@ import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FlutterForegroundTask.initCommunicationPort();
-  initForegroundTask();
+  if (!kIsWeb) {
+    FlutterForegroundTask.initCommunicationPort();
+    initForegroundTask();
+  }
   await dotenv.load(fileName: '.env');
   runApp(const BusApp());
 }
