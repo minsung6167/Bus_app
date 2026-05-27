@@ -68,36 +68,51 @@ Android·iOS 양 플랫폼을 단일 코드베이스로 개발해야 했다. 세
 
 ---
 
-## ADR-003: 인증 — 로컬 SharedPreferences 기반
+## ADR-003: 실시간 좌석 조회 — 결정적 난수 시뮬레이션으로 대체
 
 | 항목 | 내용 |
 |---|---|
-| **상태** | Accepted (프로토타입 한정) |
-| **날짜** | 2025-01 |
+| **상태** | Accepted |
+| **날짜** | 2026-05 |
 
 ### 배경
 
-사용자 계정 관리(로그인·회원가입·비밀번호 변경·탈퇴)가 필요하다. 백엔드 서버 없이 MVP를 빠르게 구현해야 하는 제약이 있었다.
+버스 예약 앱의 핵심 기능 중 하나는 실시간 좌석 현황 조회이다.
+그러나 아래와 같은 이유로 실제 실시간 좌석 데이터를 가져오는 것이 불가능하다.
+
+| 이유 | 설명 |
+|---|---|
+| **독점 유료 서비스** | 시외버스 실시간 좌석 API는 코버스(KOBUS)·금호고속 등 민간 업체가 독점 운영하며 외부에 비공개 |
+| **공공 API 미지원** | 공공데이터포털 시외버스 API는 노선·시간표·요금만 제공, 실시간 잔여 좌석 미제공 |
+| **B2B 계약 필요** | 실시간 좌석 연동은 터미널 사업자와 별도 계약 후 전용 키 발급 필요, 학생 프로젝트 접근 불가 |
+| **비용 문제** | 민간 API 중개 서비스는 월 수십만 원 이상 유료 구독 모델 |
 
 ### 결정
 
-**SharedPreferences에 사용자 목록을 JSON 직렬화**하여 저장한다.
+**결정적 난수(Deterministic Random) 기반 좌석 시뮬레이션**을 사용한다.
 
-```
-SharedPreferences
-├── "auth_users"       → List<User> (JSON 배열)
-└── "auth_current_id"  → 현재 로그인 사용자 ID
-```
+- 버스 ID + 날짜를 seed로 `Random(seed)` 생성
+- 동일한 버스·날짜는 항상 동일한 좌석 배치 반환 (재실행 후에도 일관성 유지)
+- 탑승률 40% 기준으로 occupied / available 랜덤 배분
 
-- 앱 최초 실행 시 시드 계정(`minsung1408@naver.com` / `123456`)을 자동 생성
-- 비밀번호는 평문 저장 (프로토타입 전용)
+```dart
+List<SeatStatus> generateSeats(String busId, String date) {
+  final seed = int.parse(busId.replaceAll(RegExp(r'\D'), ''))
+             + date.hashCode;
+  final rng = Random(seed);
+  return List.generate(28, (_) =>
+    rng.nextDouble() < 0.4
+      ? SeatStatus.occupied
+      : SeatStatus.available);
+}
+```
 
 ### 결과
 
 | 긍정 | 부정 |
 |---|---|
-| 백엔드 없이 완전한 인증 흐름 시연 가능 | 비밀번호 평문 저장 → 실 서비스 부적합 |
-| 오프라인 완전 동작 | 기기 간 계정 공유 불가 |
-| 구현 간단 (100줄 미만) | 앱 삭제 시 계정 소멸 |
+| API 없이 현실적인 좌석 UI 시연 가능 | 실제 잔여 좌석과 다름 |
+| 동일 버스·날짜는 항상 일관된 좌석 표시 | — |
+| 구현 단순 (seed 기반 1개 함수) | — |
 
-> ⚠️ **실 서비스 전환 시**: Firebase Auth, OAuth 2.0 등 서버 기반 인증으로 교체 필요.
+> 💡 **실 서비스 전환 시**: `generateSeats()` 함수를 실시간 API 호출로 교체하면 나머지 UI는 그대로 동작하는 구조로 설계됨.
