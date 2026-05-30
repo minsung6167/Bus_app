@@ -133,6 +133,49 @@ class AuthProvider extends ChangeNotifier {
     return null;
   }
 
+  /// 이름+전화번호로 이메일 찾기. 찾으면 이메일 반환, 없으면 null.
+  Future<String?> findEmail({required String name, required String phone}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final users = _loadUsers(prefs);
+    try {
+      final user = users.firstWhere(
+        (u) => u.name == name.trim() && u.phone == phone.trim(),
+      );
+      return user.email;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// 이메일+전화번호로 비밀번호 재설정. 성공 시 null, 실패 시 에러 키 반환.
+  Future<String?> resetPassword({
+    required String email,
+    required String phone,
+    required String newPassword,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final users = _loadUsers(prefs);
+    final idx = users.indexWhere(
+      (u) => u.email.toLowerCase() == email.toLowerCase().trim() && u.phone == phone.trim(),
+    );
+    if (idx == -1) return 'findAccountFailed';
+
+    final updated = User(
+      id: users[idx].id,
+      email: users[idx].email,
+      password: newPassword,
+      name: users[idx].name,
+      phone: users[idx].phone,
+    );
+    users[idx] = updated;
+    await _saveUsers(prefs, users);
+    if (_currentUser?.id == updated.id) {
+      _currentUser = updated;
+      notifyListeners();
+    }
+    return null;
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyCurrentId);

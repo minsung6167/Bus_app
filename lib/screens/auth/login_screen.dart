@@ -4,6 +4,7 @@ import '../../l10n/app_strings.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../theme/app_theme.dart';
+import 'find_account_screen.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -257,6 +258,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
+
+                          // 아이디/비밀번호 찾기
+                          Center(
+                            child: TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const FindAccountScreen()),
+                              ),
+                              style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6)),
+                              child: Text(AppStrings.get(lang, 'findAccount'),
+                                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                            ),
+                          ),
 
                           // 회원가입 링크
                           Row(
