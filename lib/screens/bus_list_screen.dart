@@ -31,13 +31,14 @@ class BusListScreen extends StatefulWidget {
   State<BusListScreen> createState() => _BusListScreenState();
 }
 
-enum SortOption { time, price, seats }
+enum SortOption { time, price }
 
 class _BusListScreenState extends State<BusListScreen> {
   SortOption _sortOption = SortOption.time;
   List<Bus> _buses = [];
   bool _loading = true;
   String? _errorMessage;
+  late DateTime _selectedDate;
 
   static const _weekdaysKo = ['월', '화', '수', '목', '금', '토', '일'];
   static const _weekdaysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -47,7 +48,21 @@ class _BusListScreenState extends State<BusListScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedDate = widget.date;
     _fetchBuses();
+  }
+
+  Future<void> _pickDate(String lang) async {
+    final picked = await showModalBottomSheet<DateTime>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CustomDatePicker(initialDate: _selectedDate),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() => _selectedDate = picked);
+      _fetchBuses();
+    }
   }
 
   Future<void> _fetchBuses() async {
@@ -61,7 +76,7 @@ class _BusListScreenState extends State<BusListScreen> {
         arrTerminalId: widget.toTerminalId,
         depTerminalName: widget.fromTerminalName,
         arrTerminalName: widget.toTerminalName,
-        date: widget.date,
+        date: _selectedDate,
       );
       if (mounted) {
         setState(() {
@@ -86,23 +101,21 @@ class _BusListScreenState extends State<BusListScreen> {
         filtered.sort((a, b) => a.departureTime.compareTo(b.departureTime));
       case SortOption.price:
         filtered.sort((a, b) => a.price.compareTo(b.price));
-      case SortOption.seats:
-        filtered.sort((a, b) => b.remainingSeats.compareTo(a.remainingSeats));
     }
     return filtered;
   }
 
   String _dateLabel(String lang) {
-    final idx = widget.date.weekday - 1;
+    final idx = _selectedDate.weekday - 1;
     switch (lang) {
       case 'en':
-        return '${DateFormat('MMM d').format(widget.date)} (${_weekdaysEn[idx]})';
+        return '${DateFormat('MMM d').format(_selectedDate)} (${_weekdaysEn[idx]})';
       case 'zh':
-        return '${DateFormat('M月d日').format(widget.date)} ${_weekdaysZh[idx]}';
+        return '${DateFormat('M月d日').format(_selectedDate)} ${_weekdaysZh[idx]}';
       case 'ja':
-        return '${DateFormat('M月d日').format(widget.date)} (${_weekdaysJa[idx]})';
+        return '${DateFormat('M月d日').format(_selectedDate)} (${_weekdaysJa[idx]})';
       default:
-        return '${DateFormat('M월 d일').format(widget.date)} (${_weekdaysKo[idx]})';
+        return '${DateFormat('M월 d일').format(_selectedDate)} (${_weekdaysKo[idx]})';
     }
   }
 
@@ -236,11 +249,20 @@ class _BusListScreenState extends State<BusListScreen> {
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Row(
         children: [
-          const Icon(Icons.calendar_today, size: 14, color: Colors.white70),
-          const SizedBox(width: 6),
-          Text(
-            _dateLabel(lang),
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
+          GestureDetector(
+            onTap: () => _pickDate(lang),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today, size: 14, color: Colors.white70),
+                const SizedBox(width: 6),
+                Text(
+                  _dateLabel(lang),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.arrow_drop_down, size: 16, color: Colors.white70),
+              ],
+            ),
           ),
           const Spacer(),
           if (!_loading)
@@ -278,12 +300,6 @@ class _BusListScreenState extends State<BusListScreen> {
             label: AppStrings.get(lang, 'sortPrice'),
             selected: _sortOption == SortOption.price,
             onTap: () => setState(() => _sortOption = SortOption.price),
-          ),
-          const SizedBox(width: 6),
-          _SortChip(
-            label: AppStrings.get(lang, 'sortSeats'),
-            selected: _sortOption == SortOption.seats,
-            onTap: () => setState(() => _sortOption = SortOption.seats),
           ),
         ],
       ),
@@ -336,6 +352,181 @@ class _MobileTicketDialog extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CustomDatePicker extends StatefulWidget {
+  final DateTime initialDate;
+  const _CustomDatePicker({required this.initialDate});
+
+  @override
+  State<_CustomDatePicker> createState() => _CustomDatePickerState();
+}
+
+class _CustomDatePickerState extends State<_CustomDatePicker> {
+  late int _year;
+  late int _month;
+  int? _selectedDay;
+  bool _showDays = false;
+
+  static const _months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  static const _weekdays = ['일','월','화','수','목','금','토'];
+
+  @override
+  void initState() {
+    super.initState();
+    _year = widget.initialDate.year;
+    _month = widget.initialDate.month;
+    _selectedDay = widget.initialDate.day;
+  }
+
+  int get _daysInMonth => DateTime(_year, _month + 1, 0).day;
+  int get _firstWeekday => DateTime(_year, _month, 1).weekday % 7;
+
+  bool _isSelectable(int day) {
+    final date = DateTime(_year, _month, day);
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final maxDate = todayDate.add(const Duration(days: 60));
+    return !date.isBefore(todayDate) && !date.isAfter(maxDate);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(width: 40, height: 4,
+            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 20),
+
+          // 헤더: 년도 + 좌우 화살표
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => setState(() { _year--; _showDays = false; }),
+              ),
+              GestureDetector(
+                onTap: () => setState(() => _showDays = false),
+                child: Text('$_year년', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: () => setState(() { _year++; _showDays = false; }),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          if (!_showDays) ...[
+            // 월 선택 그리드
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1.8,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+              ),
+              itemCount: 12,
+              itemBuilder: (_, i) {
+                final isSelected = (i + 1) == _month;
+                return GestureDetector(
+                  onTap: () => setState(() { _month = i + 1; _selectedDay = null; _showDays = true; }),
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : AppColors.background,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: isSelected ? AppColors.primary : AppColors.divider),
+                    ),
+                    child: Text(_months[i],
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? Colors.white : AppColors.textPrimary,
+                      )),
+                  ),
+                );
+              },
+            ),
+          ] else ...[
+            // 월 헤더 (탭하면 다시 월 선택)
+            GestureDetector(
+              onTap: () => setState(() => _showDays = false),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('${_months[_month - 1]}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.primary)),
+                  const Icon(Icons.arrow_drop_up, color: AppColors.primary),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // 요일 헤더
+            Row(
+              children: _weekdays.map((d) => Expanded(
+                child: Center(child: Text(d,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
+                    color: d == '일' ? Colors.red : d == '토' ? Colors.blue : AppColors.textSecondary))),
+              )).toList(),
+            ),
+            const SizedBox(height: 8),
+
+            // 날짜 그리드
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                childAspectRatio: 1.1,
+              ),
+              itemCount: _firstWeekday + _daysInMonth,
+              itemBuilder: (_, i) {
+                if (i < _firstWeekday) return const SizedBox();
+                final day = i - _firstWeekday + 1;
+                final selectable = _isSelectable(day);
+                final isSelected = day == _selectedDay;
+                final col = i % 7;
+                Color textColor = col == 0 ? Colors.red : col == 6 ? Colors.blue : AppColors.textPrimary;
+                if (!selectable) textColor = AppColors.textHint;
+
+                return GestureDetector(
+                  onTap: selectable ? () {
+                    final date = DateTime(_year, _month, day);
+                    Navigator.of(context).pop(date);
+                  } : null,
+                  child: Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : Colors.transparent,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('$day',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? Colors.white : textColor,
+                      )),
+                  ),
+                );
+              },
+            ),
+          ],
+        ],
       ),
     );
   }
