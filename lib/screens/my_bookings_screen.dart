@@ -9,9 +9,41 @@ import '../providers/booking_provider.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 import 'auth/login_screen.dart';
+import 'ticket_detail_screen.dart';
 
-class MyBookingsScreen extends StatelessWidget {
-  const MyBookingsScreen({super.key});
+class MyBookingsScreen extends StatefulWidget {
+  final int initialTab;
+  final ValueNotifier<int>? tabNotifier;
+  const MyBookingsScreen({super.key, this.initialTab = 0, this.tabNotifier});
+
+  @override
+  State<MyBookingsScreen> createState() => _MyBookingsScreenState();
+}
+
+class _MyBookingsScreenState extends State<MyBookingsScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTab);
+    widget.tabNotifier?.addListener(_onTabNotifier);
+  }
+
+  void _onTabNotifier() {
+    final tab = widget.tabNotifier!.value;
+    if (_tabController.index != tab) {
+      _tabController.animateTo(tab);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.tabNotifier?.removeListener(_onTabNotifier);
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,29 +97,28 @@ class MyBookingsScreen extends StatelessWidget {
         final upcoming = provider.bookings.where((b) => b.isUpcoming).toList();
         final past = provider.bookings.where((b) => !b.isUpcoming).toList();
 
-        return DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            backgroundColor: AppColors.background,
-            appBar: AppBar(
-              title: Text(AppStrings.get(lang, 'tabMyBookings')),
-              automaticallyImplyLeading: false,
-              bottom: TabBar(
-                indicatorColor: Colors.white,
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white60,
-                tabs: [
-                  Tab(text: AppStrings.get(lang, 'tabUpcoming')),
-                  Tab(text: AppStrings.get(lang, 'tabPast')),
-                ],
-              ),
-            ),
-            body: TabBarView(
-              children: [
-                _BookingList(bookings: upcoming, isEmpty: upcoming.isEmpty, lang: lang),
-                _BookingList(bookings: past, isEmpty: past.isEmpty, isPast: true, lang: lang),
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: Text(AppStrings.get(lang, 'tabMyBookings')),
+            automaticallyImplyLeading: false,
+            bottom: TabBar(
+              controller: _tabController,
+              indicatorColor: Colors.white,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white60,
+              tabs: [
+                Tab(text: AppStrings.get(lang, 'tabUpcoming')),
+                Tab(text: AppStrings.get(lang, 'tabPast')),
               ],
             ),
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              _BookingList(bookings: upcoming, isEmpty: upcoming.isEmpty, lang: lang),
+              _BookingList(bookings: past, isEmpty: past.isEmpty, isPast: true, lang: lang),
+            ],
           ),
         );
       },
@@ -159,7 +190,11 @@ class _BookingCard extends StatelessWidget {
     final dateFormat = DateFormat('yyyy.MM.dd');
     final priceFormat = NumberFormat('#,###');
 
-    return Container(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => TicketDetailScreen(booking: booking)),
+      ),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -257,7 +292,7 @@ class _BookingCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
