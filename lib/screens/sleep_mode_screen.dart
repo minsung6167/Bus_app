@@ -153,7 +153,7 @@ class _SleepModeScreenState extends State<SleepModeScreen>
             ),
             child: Column(
               children: [
-                const Icon(Icons.nightlight_round, size: 56, color: Color(0xFF7C3AED)),
+                const Icon(Icons.snooze, size: 56, color: Color(0xFF7C3AED)),
                 const SizedBox(height: 12),
                 const Text('수면 모드',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -244,7 +244,7 @@ class _SleepModeScreenState extends State<SleepModeScreen>
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _startService,
-              icon: const Icon(Icons.nightlight_round),
+              icon: const Icon(Icons.snooze),
               label: const Text('수면 모드 시작', style: TextStyle(fontSize: 16)),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -278,7 +278,7 @@ class _SleepModeScreenState extends State<SleepModeScreen>
                   ),
                 ],
               ),
-              child: const Icon(Icons.nightlight_round, size: 80, color: Color(0xFFE2D9F3)),
+              child: const Icon(Icons.snooze, size: 80, color: Color(0xFFE2D9F3)),
             ),
           ),
           const SizedBox(height: 40),
