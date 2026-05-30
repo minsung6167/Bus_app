@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 import '../providers/auth_provider.dart';
@@ -7,12 +9,55 @@ import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 import 'auth/login_screen.dart';
 import 'coupon_screen.dart';
+import 'main_screen.dart';
 import 'my_info_screen.dart';
 import 'event_screen.dart';
 import 'notice_screen.dart';
 
-class MyPageScreen extends StatelessWidget {
+class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
+
+  @override
+  State<MyPageScreen> createState() => _MyPageScreenState();
+}
+
+class _MyPageScreenState extends State<MyPageScreen> {
+  Future<void> _pickProfileImage(BuildContext context) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4,
+              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+              title: const Text('갤러리에서 선택'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
+              title: const Text('카메라로 촬영'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !context.mounted) return;
+    final picked = await ImagePicker().pickImage(source: source, imageQuality: 80);
+    if (picked != null && context.mounted) {
+      await context.read<AuthProvider>().updateProfileImage(picked.path);
+    }
+  }
 
   void _showLanguagePicker(BuildContext context, LanguageProvider langProvider) {
     showModalBottomSheet(
@@ -85,6 +130,7 @@ class MyPageScreen extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
     final bookings = context.watch<BookingProvider>().bookings;
     final user = auth.currentUser;
+    final profileImagePath = auth.profileImagePath;
 
     if (user == null) {
       return Scaffold(
@@ -149,18 +195,46 @@ class MyPageScreen extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // 아바타
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.25),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
-                      ),
-                      child: Center(
-                        child: Text(initials,
-                          style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                    // 프로필 사진
+                    GestureDetector(
+                      onTap: () => _pickProfileImage(context),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+                              image: profileImagePath != null
+                                  ? DecorationImage(
+                                      image: FileImage(File(profileImagePath)),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                              color: profileImagePath == null
+                                  ? Colors.white.withOpacity(0.25)
+                                  : null,
+                            ),
+                            child: profileImagePath == null
+                                ? const Icon(Icons.person, color: Colors.white, size: 36)
+                                : null,
+                          ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: AppColors.primary, width: 1.5),
+                              ),
+                              child: const Icon(Icons.camera_alt, size: 11, color: AppColors.primary),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -202,25 +276,24 @@ class MyPageScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(20),
                         child: Row(
                           children: [
-                            Expanded(child: _StatItem(
-                              icon: Icons.confirmation_number_outlined,
-                              label: AppStrings.get(lang, 'upcomingTrips'),
-                              value: '$upcoming',
-                              color: AppColors.primary,
+                            Expanded(child: GestureDetector(
+                              onTap: () => mainScreenKey.currentState?.switchToBookings(0),
+                              child: _StatItem(
+                                icon: Icons.confirmation_number_outlined,
+                                label: AppStrings.get(lang, 'upcomingTrips'),
+                                value: '$upcoming',
+                                color: AppColors.primary,
+                              ),
                             )),
                             Container(width: 1, height: 40, color: AppColors.divider),
-                            Expanded(child: _StatItem(
-                              icon: Icons.history_outlined,
-                              label: AppStrings.get(lang, 'pastTrips'),
-                              value: '$past',
-                              color: AppColors.textSecondary,
-                            )),
-                            Container(width: 1, height: 40, color: AppColors.divider),
-                            Expanded(child: _StatItem(
-                              icon: Icons.receipt_long_outlined,
-                              label: AppStrings.get(lang, 'totalBookings'),
-                              value: '${bookings.length}',
-                              color: const Color(0xFF7C3AED),
+                            Expanded(child: GestureDetector(
+                              onTap: () => mainScreenKey.currentState?.switchToBookings(1),
+                              child: _StatItem(
+                                icon: Icons.history_outlined,
+                                label: AppStrings.get(lang, 'pastTrips'),
+                                value: '$past',
+                                color: AppColors.textSecondary,
+                              ),
                             )),
                           ],
                         ),

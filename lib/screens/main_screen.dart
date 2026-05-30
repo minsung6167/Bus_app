@@ -19,15 +19,21 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  final _bookingTabNotifier = ValueNotifier<int>(0);
 
   void switchTab(int index) {
     setState(() => _currentIndex = index);
   }
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    MyBookingsScreen(),
-    MyPageScreen(),
+  void switchToBookings(int tab) {
+    _bookingTabNotifier.value = tab;
+    setState(() => _currentIndex = 1);
+  }
+
+  late final List<Widget> _screens = [
+    const HomeScreen(),
+    MyBookingsScreen(tabNotifier: _bookingTabNotifier),
+    const MyPageScreen(),
   ];
 
   @override
