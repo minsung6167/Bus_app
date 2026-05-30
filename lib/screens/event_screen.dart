@@ -85,8 +85,9 @@ class EventScreen extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: _eventData.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (ctx, i) => _EventCard(event: _eventData[i], lang: lang),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) =>
+                  _EventCard(event: _eventData[i], lang: lang),
             ),
     );
   }
@@ -118,7 +119,11 @@ class _EventCardState extends State<_EventCard> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.07), blurRadius: 12, offset: const Offset(0, 3)),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.07),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
         child: Column(
@@ -128,11 +133,15 @@ class _EventCardState extends State<_EventCard> {
               height: 110,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: isActive ? colors : [Colors.grey.shade400, Colors.grey.shade300],
+                  colors: isActive
+                      ? colors
+                      : [Colors.grey.shade400, Colors.grey.shade300],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
               ),
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -145,7 +154,11 @@ class _EventCardState extends State<_EventCard> {
                       color: Colors.white.withOpacity(0.25),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(e['icon'] as IconData, color: Colors.white, size: 26),
+                    child: Icon(
+                      e['icon'] as IconData,
+                      color: Colors.white,
+                      size: 26,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -155,18 +168,28 @@ class _EventCardState extends State<_EventCard> {
                       children: [
                         Text(
                           e['title'] as String,
-                          style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           e['subtitle'] as String,
-                          style: const TextStyle(color: Colors.white70, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.25),
                       borderRadius: BorderRadius.circular(20),
@@ -176,7 +199,11 @@ class _EventCardState extends State<_EventCard> {
                       isActive
                           ? AppStrings.get(lang, 'eventOngoing')
                           : AppStrings.get(lang, 'eventEnded'),
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -188,15 +215,24 @@ class _EventCardState extends State<_EventCard> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.textHint),
+                  const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 14,
+                    color: AppColors.textHint,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${AppStrings.get(lang, 'eventPeriod')}  ${e['period']}',
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const Spacer(),
                   Icon(
-                    _expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    _expanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     size: 20,
                     color: AppColors.textHint,
                   ),
@@ -206,12 +242,21 @@ class _EventCardState extends State<_EventCard> {
 
             // 상세 내용
             if (_expanded) ...[
-              const Divider(height: 1, color: AppColors.divider, indent: 16, endIndent: 16),
+              const Divider(
+                height: 1,
+                color: AppColors.divider,
+                indent: 16,
+                endIndent: 16,
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
                 child: Text(
                   e['desc'] as String,
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.7),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                    height: 1.7,
+                  ),
                 ),
               ),
             ],

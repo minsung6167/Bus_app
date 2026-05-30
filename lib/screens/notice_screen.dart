@@ -77,7 +77,7 @@ class NoticeScreen extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: _noticeData.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (ctx, i) => _NoticeItem(notice: _noticeData[i]),
             ),
     );
@@ -95,7 +95,11 @@ class _NoticeItem extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Theme(
@@ -111,12 +115,20 @@ class _NoticeItem extends StatelessWidget {
             ),
             child: const Text(
               '공지',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
             ),
           ),
           title: Text(
             notice['title']!,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 2),
@@ -135,7 +147,11 @@ class _NoticeItem extends StatelessWidget {
               ),
               child: Text(
                 notice['content']!,
-                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.6),
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                  height: 1.6,
+                ),
               ),
             ),
           ],

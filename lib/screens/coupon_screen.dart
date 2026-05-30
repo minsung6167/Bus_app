@@ -72,11 +72,14 @@ class _CouponScreenState extends State<CouponScreen> {
 
     final filtered = _coupons.where((c) {
       if (_selectedFilter == 1) return c['status'] == _available;
-      if (_selectedFilter == 2) return c['status'] == _used || c['status'] == _expired;
+      if (_selectedFilter == 2)
+        return c['status'] == _used || c['status'] == _expired;
       return true;
     }).toList();
 
-    final availableCount = _coupons.where((c) => c['status'] == _available).length;
+    final availableCount = _coupons
+        .where((c) => c['status'] == _available)
+        .length;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -129,11 +132,18 @@ class _CouponScreenState extends State<CouponScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.confirmation_number_outlined, size: 64, color: AppColors.textHint),
+                        const Icon(
+                          Icons.confirmation_number_outlined,
+                          size: 64,
+                          color: AppColors.textHint,
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           AppStrings.get(lang, 'noCoupons'),
-                          style: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -141,8 +151,9 @@ class _CouponScreenState extends State<CouponScreen> {
                 : ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: filtered.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (ctx, i) => _CouponCard(coupon: filtered[i], lang: lang),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (ctx, i) =>
+                        _CouponCard(coupon: filtered[i], lang: lang),
                   ),
           ),
         ],
@@ -156,7 +167,11 @@ class _FilterChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _FilterChip({required this.label, required this.selected, required this.onTap});
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +286,10 @@ class _CouponCard extends StatelessWidget {
                 // 오른쪽 정보
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -290,7 +308,10 @@ class _CouponCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: statusBg,
                                 borderRadius: BorderRadius.circular(10),
@@ -309,27 +330,44 @@ class _CouponCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           coupon['desc'] as String,
-                          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            const Icon(Icons.receipt_outlined, size: 12, color: AppColors.textHint),
+                            const Icon(
+                              Icons.receipt_outlined,
+                              size: 12,
+                              color: AppColors.textHint,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${AppStrings.get(lang, 'couponMinAmount')} ${coupon['minAmount']}',
-                              style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textHint,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textHint),
+                            const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 12,
+                              color: AppColors.textHint,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${AppStrings.get(lang, 'couponExpiry')} ${coupon['expiry']}',
-                              style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textHint,
+                              ),
                             ),
                           ],
                         ),

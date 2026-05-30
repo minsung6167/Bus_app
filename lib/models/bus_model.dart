@@ -27,7 +27,7 @@ class Bus {
     final diff = arrivalTime.difference(departureTime);
     final h = diff.inHours;
     final m = diff.inMinutes % 60;
-    if (h == 0) return '${m}분';
+    if (h == 0) return '$m분';
     if (m == 0) return '$h시간';
     return '$h시간 $m분';
   }

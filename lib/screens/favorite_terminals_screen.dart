@@ -30,14 +30,19 @@ class FavoriteTerminalsScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.star_outline_rounded,
-                      size: 64, color: AppColors.textHint),
+                  const Icon(
+                    Icons.star_outline_rounded,
+                    size: 64,
+                    color: AppColors.textHint,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     AppStrings.get(lang, 'noFavoritesHint'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 15, color: AppColors.textSecondary),
+                      fontSize: 15,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -45,14 +50,16 @@ class FavoriteTerminalsScreen extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: favorites.length,
-              separatorBuilder: (_, __) =>
+              separatorBuilder: (_, _) =>
                   const Divider(height: 1, color: AppColors.divider),
               itemBuilder: (ctx, i) {
                 final t = favorites[i];
                 final region = _resolveRegion(t.name, t.cityName);
                 return ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 4,
+                  ),
                   leading: Container(
                     width: 42,
                     height: 42,
@@ -60,26 +67,34 @@ class FavoriteTerminalsScreen extends StatelessWidget {
                       color: const Color(0xFFFEF3C7),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.star_rounded,
-                        color: Color(0xFFF59E0B), size: 22),
+                    child: const Icon(
+                      Icons.star_rounded,
+                      color: Color(0xFFF59E0B),
+                      size: 22,
+                    ),
                   ),
                   title: Text(
                     TerminalNames.translate(t.name, lang),
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   subtitle: Text(
                     TerminalNames.translateCity(region, lang),
                     style: const TextStyle(
-                        fontSize: 12, color: AppColors.textSecondary),
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   trailing: IconButton(
-                    icon: const Icon(Icons.star_rounded,
-                        color: Color(0xFFF59E0B), size: 22),
+                    icon: const Icon(
+                      Icons.star_rounded,
+                      color: Color(0xFFF59E0B),
+                      size: 22,
+                    ),
                     splashRadius: 18,
-                    onPressed: () =>
-                        context.read<FavoriteProvider>().toggle(t),
+                    onPressed: () => context.read<FavoriteProvider>().toggle(t),
                   ),
                 );
               },
