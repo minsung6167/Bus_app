@@ -36,6 +36,8 @@ class _FindAccountScreenState extends State<FindAccountScreen>
         title: Text(AppStrings.get(lang, 'findAccount')),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           tabs: [
             Tab(text: AppStrings.get(lang, 'findEmail')),
             Tab(text: AppStrings.get(lang, 'findPassword')),

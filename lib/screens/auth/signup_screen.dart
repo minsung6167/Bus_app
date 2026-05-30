@@ -51,7 +51,6 @@ class _SignupScreenState extends State<SignupScreen> {
         setState(() { _loading = false; _errorMsg = AppStrings.get(lang, err); });
       } else {
         Navigator.of(context).pop();
-        Navigator.of(context).pop();
       }
     }
   }
