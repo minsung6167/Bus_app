@@ -84,6 +84,7 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
           body: Form(
             key: _formKey,
             child: ListView(
+              physics: const ClampingScrollPhysics(),
               padding: const EdgeInsets.all(20),
               children: [
                 // ── 여행 정보 ──────────────────────────────
@@ -447,70 +448,83 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
         const SizedBox(height: 12),
 
         // 유효기간 월 / 년 / 비밀번호 앞 2자리
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _expiryMCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(2),
-                ],
-                decoration: InputDecoration(
-                  labelText: AppStrings.get(lang, 'expiryMonth'),
-                  hintText: 'MM',
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final labelStyle = TextStyle(
+              fontSize: (constraints.maxWidth / 3 < 100) ? 11.0 : 13.0,
+            );
+            final fieldDecoration = InputDecoration(
+              isDense: true,
+              labelStyle: labelStyle,
+              floatingLabelStyle: labelStyle,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            );
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _expiryMCtrl,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
+                    decoration: fieldDecoration.copyWith(
+                      labelText: AppStrings.get(lang, 'expiryMonth'),
+                      hintText: 'MM',
+                    ),
+                    validator: (v) {
+                      final m = int.tryParse(v ?? '');
+                      if (m == null || m < 1 || m > 12) {
+                        return AppStrings.get(lang, 'expiryError');
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                validator: (v) {
-                  final m = int.tryParse(v ?? '');
-                  if (m == null || m < 1 || m > 12) {
-                    return AppStrings.get(lang, 'expiryError');
-                  }
-                  return null;
-                },
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                controller: _expiryYCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(2),
-                ],
-                decoration: InputDecoration(
-                  labelText: AppStrings.get(lang, 'expiryYear'),
-                  hintText: 'YY',
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextFormField(
+                    controller: _expiryYCtrl,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
+                    decoration: fieldDecoration.copyWith(
+                      labelText: AppStrings.get(lang, 'expiryYear'),
+                      hintText: 'YY',
+                    ),
+                    validator: (v) {
+                      if ((v ?? '').length != 2) return AppStrings.get(lang, 'expiryError');
+                      return null;
+                    },
+                  ),
                 ),
-                validator: (v) {
-                  if ((v ?? '').length != 2) return AppStrings.get(lang, 'expiryError');
-                  return null;
-                },
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                controller: _cardPwCtrl,
-                obscureText: true,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(2),
-                ],
-                decoration: InputDecoration(
-                  labelText: AppStrings.get(lang, 'cardPw2'),
-                  hintText: '••',
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextFormField(
+                    controller: _cardPwCtrl,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
+                    decoration: fieldDecoration.copyWith(
+                      labelText: AppStrings.get(lang, 'cardPw2'),
+                      hintText: '••',
+                    ),
+                    validator: (v) {
+                      if ((v ?? '').length != 2) return AppStrings.get(lang, 'cardPwError');
+                      return null;
+                    },
+                  ),
                 ),
-                validator: (v) {
-                  if ((v ?? '').length != 2) return AppStrings.get(lang, 'cardPwError');
-                  return null;
-                },
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ],
     );

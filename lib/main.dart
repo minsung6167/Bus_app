@@ -51,11 +51,24 @@ class BusApp extends StatelessWidget {
             Locale('zh'),
             Locale('ja'),
           ],
+          scrollBehavior: const _NoOverscroll(),
           home: const _AuthGate(),
         ),
       ),
     );
   }
+}
+
+class _NoOverscroll extends ScrollBehavior {
+  const _NoOverscroll();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const ClampingScrollPhysics();
+
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) =>
+      child;
 }
 
 class _AuthGate extends StatelessWidget {
