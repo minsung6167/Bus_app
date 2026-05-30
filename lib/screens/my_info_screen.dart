@@ -13,7 +13,12 @@ class MyInfoScreen extends StatefulWidget {
 }
 
 class _MyInfoScreenState extends State<MyInfoScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _profileFormKey = GlobalKey<FormState>();
+  final _pwFormKey = GlobalKey<FormState>();
+
+  late TextEditingController _nameCtrl;
+  late TextEditingController _phoneCtrl;
+  late TextEditingController _emailCtrl;
   final _currentPwCtrl = TextEditingController();
   final _newPwCtrl = TextEditingController();
   final _confirmPwCtrl = TextEditingController();
@@ -21,21 +26,55 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
-  bool _loading = false;
+  bool _profileLoading = false;
+  bool _pwLoading = false;
+  String? _profileError;
+  bool _profileSuccess = false;
   String? _pwError;
   bool _pwSuccess = false;
 
   @override
+  void initState() {
+    super.initState();
+    final user = context.read<AuthProvider>().currentUser!;
+    _nameCtrl = TextEditingController(text: user.name);
+    _phoneCtrl = TextEditingController(text: user.phone);
+    _emailCtrl = TextEditingController(text: user.email);
+  }
+
+  @override
   void dispose() {
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _emailCtrl.dispose();
     _currentPwCtrl.dispose();
     _newPwCtrl.dispose();
     _confirmPwCtrl.dispose();
     super.dispose();
   }
 
+  Future<void> _updateProfile(String lang) async {
+    if (!_profileFormKey.currentState!.validate()) return;
+    setState(() { _profileLoading = true; _profileError = null; _profileSuccess = false; });
+
+    final err = await context.read<AuthProvider>().updateProfile(
+      name: _nameCtrl.text,
+      phone: _phoneCtrl.text,
+      email: _emailCtrl.text,
+    );
+
+    if (mounted) {
+      if (err == null) {
+        setState(() { _profileLoading = false; _profileSuccess = true; });
+      } else {
+        setState(() { _profileLoading = false; _profileError = AppStrings.get(lang, err); });
+      }
+    }
+  }
+
   Future<void> _changePassword(String lang) async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() { _loading = true; _pwError = null; _pwSuccess = false; });
+    if (!_pwFormKey.currentState!.validate()) return;
+    setState(() { _pwLoading = true; _pwError = null; _pwSuccess = false; });
 
     final err = await context.read<AuthProvider>().changePassword(
       currentPassword: _currentPwCtrl.text,
@@ -47,9 +86,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         _currentPwCtrl.clear();
         _newPwCtrl.clear();
         _confirmPwCtrl.clear();
-        setState(() { _loading = false; _pwSuccess = true; });
+        setState(() { _pwLoading = false; _pwSuccess = true; });
       } else {
-        setState(() { _loading = false; _pwError = AppStrings.get(lang, err); });
+        setState(() { _pwLoading = false; _pwError = AppStrings.get(lang, err); });
       }
     }
   }
@@ -151,47 +190,82 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       appBar: AppBar(title: Text(AppStrings.get(lang, 'myInfo'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 계정 정보 카드
-              _SectionCard(
-                title: AppStrings.get(lang, 'accountInfo'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 내 정보 수정 카드
+            _SectionCard(
+              title: AppStrings.get(lang, 'accountInfo'),
+              child: Form(
+                key: _profileFormKey,
                 child: Column(
                   children: [
-                    _InfoRow(
-                      icon: Icons.badge_outlined,
-                      label: AppStrings.get(lang, 'myId'),
-                      value: user.email,
+                    TextFormField(
+                      controller: _nameCtrl,
+                      decoration: InputDecoration(
+                        labelText: AppStrings.get(lang, 'nameLabel'),
+                        prefixIcon: const Icon(Icons.person_outline),
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? AppStrings.get(lang, 'nameRequired') : null,
                     ),
-                    const Divider(height: 1, color: AppColors.divider),
-                    _InfoRow(
-                      icon: Icons.person_outline,
-                      label: AppStrings.get(lang, 'nameLabel'),
-                      value: user.name,
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _phoneCtrl,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: AppStrings.get(lang, 'phoneLabel'),
+                        prefixIcon: const Icon(Icons.phone_outlined),
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? AppStrings.get(lang, 'phoneRequired') : null,
                     ),
-                    const Divider(height: 1, color: AppColors.divider),
-                    _InfoRow(
-                      icon: Icons.phone_outlined,
-                      label: AppStrings.get(lang, 'phoneLabel'),
-                      value: user.phone,
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _emailCtrl,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: AppStrings.get(lang, 'email'),
+                        prefixIcon: const Icon(Icons.email_outlined),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty) return AppStrings.get(lang, 'emailRequired');
+                        if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(v.trim())) {
+                          return AppStrings.get(lang, 'emailInvalid');
+                        }
+                        return null;
+                      },
                     ),
-                    const Divider(height: 1, color: AppColors.divider),
-                    _InfoRow(
-                      icon: Icons.email_outlined,
-                      label: AppStrings.get(lang, 'email'),
-                      value: user.email,
+                    if (_profileError != null) ...[
+                      const SizedBox(height: 12),
+                      _StatusBox(message: _profileError!, isError: true),
+                    ],
+                    if (_profileSuccess) ...[
+                      const SizedBox(height: 12),
+                      _StatusBox(message: AppStrings.get(lang, 'profileUpdated'), isError: false),
+                    ],
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _profileLoading ? null : () => _updateProfile(lang),
+                        child: _profileLoading
+                            ? const SizedBox(width: 20, height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : Text(AppStrings.get(lang, 'saveBtn')),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 16),
 
-              // 비밀번호 변경 카드
-              _SectionCard(
-                title: AppStrings.get(lang, 'changePw'),
+            // 비밀번호 변경 카드
+            _SectionCard(
+              title: AppStrings.get(lang, 'changePw'),
+              child: Form(
+                key: _pwFormKey,
                 child: Column(
                   children: [
                     _PwField(
@@ -231,50 +305,19 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
                     if (_pwError != null) ...[
                       const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF2F2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFFECACA)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.error_outline, color: Color(0xFFE53935), size: 15),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(_pwError!,
-                              style: const TextStyle(fontSize: 12, color: Color(0xFFE53935)))),
-                          ],
-                        ),
-                      ),
+                      _StatusBox(message: _pwError!, isError: true),
                     ],
-
                     if (_pwSuccess) ...[
                       const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFF86EFAC)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.check_circle_outline, color: AppColors.success, size: 15),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(AppStrings.get(lang, 'pwChanged'),
-                              style: const TextStyle(fontSize: 12, color: AppColors.success))),
-                          ],
-                        ),
-                      ),
+                      _StatusBox(message: AppStrings.get(lang, 'pwChanged'), isError: false),
                     ],
 
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _loading ? null : () => _changePassword(lang),
-                        child: _loading
+                        onPressed: _pwLoading ? null : () => _changePassword(lang),
+                        child: _pwLoading
                             ? const SizedBox(width: 20, height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                             : Text(AppStrings.get(lang, 'changeBtn')),
@@ -283,10 +326,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+            ),
+            const SizedBox(height: 32),
 
-              // 회원탈퇴
-              SizedBox(
+            // 회원탈퇴
+            SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () => _showDeleteDialog(context, lang),
@@ -302,9 +346,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-            ],
-          ),
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );
@@ -340,24 +383,30 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  const _InfoRow({required this.icon, required this.label, required this.value});
+class _StatusBox extends StatelessWidget {
+  final String message;
+  final bool isError;
+  const _StatusBox({required this.message, required this.isError});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: isError ? const Color(0xFFFEF2F2) : const Color(0xFFECFDF5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: isError ? const Color(0xFFFECACA) : const Color(0xFF86EFAC)),
+      ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.textHint),
-          const SizedBox(width: 12),
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-          const Spacer(),
-          Text(value,
-            style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+          Icon(
+            isError ? Icons.error_outline : Icons.check_circle_outline,
+            color: isError ? const Color(0xFFE53935) : AppColors.success,
+            size: 15,
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message,
+            style: TextStyle(fontSize: 12, color: isError ? const Color(0xFFE53935) : AppColors.success))),
         ],
       ),
     );

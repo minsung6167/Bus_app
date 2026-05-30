@@ -6,13 +6,16 @@ import '../models/user_model.dart';
 class AuthProvider extends ChangeNotifier {
   static const _keyUsers = 'auth_users';
   static const _keyCurrentId = 'auth_current_id';
+  static const _keyProfileImage = 'profile_image_path';
 
   User? _currentUser;
   bool _isInitializing = true;
+  String? _profileImagePath;
 
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _currentUser != null;
   bool get isInitializing => _isInitializing;
+  String? get profileImagePath => _profileImagePath;
 
   static const _seedEmail = 'minsung1408@naver.com';
   static const _seedId = 'seed_user_001';
@@ -33,6 +36,8 @@ class AuthProvider extends ChangeNotifier {
       ));
       await _saveUsers(prefs, users);
     }
+
+    _profileImagePath = prefs.getString(_keyProfileImage);
 
     final currentId = prefs.getString(_keyCurrentId);
     if (currentId != null) {
@@ -87,9 +92,6 @@ class AuthProvider extends ChangeNotifier {
 
     users.add(newUser);
     await _saveUsers(prefs, users);
-    _currentUser = newUser;
-    await prefs.setString(_keyCurrentId, newUser.id);
-    notifyListeners();
     return null;
   }
 
@@ -129,6 +131,39 @@ class AuthProvider extends ChangeNotifier {
     await _saveUsers(prefs, users);
     await prefs.remove(_keyCurrentId);
     _currentUser = null;
+    notifyListeners();
+    return null;
+  }
+
+  /// 이름·연락처·이메일 수정. 성공 시 null, 실패 시 에러 키 반환.
+  Future<String?> updateProfile({
+    required String name,
+    required String phone,
+    required String email,
+  }) async {
+    if (_currentUser == null) return 'error';
+    final prefs = await SharedPreferences.getInstance();
+    final users = _loadUsers(prefs);
+
+    // 이메일 중복 체크 (본인 제외)
+    final emailExists = users.any(
+      (u) => u.email.toLowerCase() == email.toLowerCase().trim() && u.id != _currentUser!.id,
+    );
+    if (emailExists) return 'emailExists';
+
+    final idx = users.indexWhere((u) => u.id == _currentUser!.id);
+    if (idx == -1) return 'error';
+
+    final updated = User(
+      id: _currentUser!.id,
+      email: email.trim(),
+      password: _currentUser!.password,
+      name: name.trim(),
+      phone: phone.trim(),
+    );
+    users[idx] = updated;
+    await _saveUsers(prefs, users);
+    _currentUser = updated;
     notifyListeners();
     return null;
   }
@@ -174,6 +209,13 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
     return null;
+  }
+
+  Future<void> updateProfileImage(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyProfileImage, path);
+    _profileImagePath = path;
+    notifyListeners();
   }
 
   Future<void> logout() async {
