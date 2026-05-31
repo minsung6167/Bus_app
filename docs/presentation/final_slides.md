@@ -93,7 +93,7 @@ style: |
 
 ---
 
-## 05. 아키텍처
+## 04. 아키텍처
 
 <div style="font-size:0.76em; margin-top:4px; display:flex; gap:14px;">
 
@@ -176,7 +176,7 @@ style: |
 
 ---
 
-## 06. 화면 구성
+## 05. 화면 구성
 
 ![bg right:35% contain](home_screenshot.png)
 
@@ -201,7 +201,7 @@ MainScreen (하단 탭 3개)
 
 ---
 
-## 07. 핵심 구현 — GPS 수면 모드
+## 06. 핵심 구현 — GPS 수면 모드
 
 **"자다가 목적지 근처에 오면 자동으로 깨워준다"**
 
@@ -234,7 +234,7 @@ void onRepeatEvent(DateTime timestamp) async {
 
 ---
 
-## 08. 핵심 구현 — 고객센터 챗봇
+## 07. 핵심 구현 — 고객센터 챗봇
 
 **"자주 묻는 질문을 채팅 형식으로 즉시 안내"**
 
@@ -277,7 +277,7 @@ void onRepeatEvent(DateTime timestamp) async {
 
 ---
 
-## 09. 개발 한계 — 실시간 좌석 조회
+## 08. 개발 한계 — 실시간 좌석 조회
 
 <div class="warn">
 ⚠️ <strong>실시간 좌석 API는 터미널 측 독점 유료 서비스</strong>로<br>
