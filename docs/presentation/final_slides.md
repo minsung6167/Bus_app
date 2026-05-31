@@ -93,39 +93,6 @@ style: |
 
 ---
 
-## 04. 기술 스택
-
-<div class="cols2">
-<div>
-
-**🛠️ 개발 환경**
-
-| 도구 | 용도 |
-|---|---|
-| Flutter 3.41 (Dart) | 크로스플랫폼 앱 개발 |
-| VSCode | 주 개발 편집기 |
-| Android Studio | 에뮬레이터 · 빌드 |
-| GitHub | 버전 관리 |
-
-</div>
-<div>
-
-**📦 주요 패키지 · API**
-
-| 항목 | 용도 |
-|---|---|
-| Provider | 상태 관리 |
-| geolocator | GPS 위치 추적 |
-| flutter_foreground_task | 백그라운드 서비스 |
-| qr_flutter | QR코드 생성 |
-| 공공데이터포털 API | 버스 운행정보 조회 |
-| Google Maps API | 지도 기능 *(예정)* |
-
-</div>
-</div>
-
----
-
 ## 05. 아키텍처
 
 <div style="font-size:0.76em; margin-top:4px; display:flex; gap:14px;">
