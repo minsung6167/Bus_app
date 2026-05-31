@@ -53,7 +53,8 @@
       margin-bottom: 28px;
       overflow-x: auto;
     }
-    .mermaid { min-width: 700px; }
+    .mermaid svg { width: 100% !important; height: auto !important; }
+    .gantt-wrap { overflow-x: auto; }
     .legend {
       display: flex;
       gap: 20px;
@@ -97,42 +98,45 @@
 
     <div class="card">
       <h2>📅 전체 일정 (Gantt)</h2>
+      <div class="gantt-wrap">
       <div class="mermaid">
+%%{init: {'gantt': {'leftPadding': 160, 'fontSize': 13}}}%%
 gantt
-    title 시외버스 통합 예약 앱 개발 일정
+    title 개발 일정
     dateFormat YYYY-MM-DD
     todayMarker on
 
-    section 📋 기획 (10주차)
-        주제 선정 및 아이디어 구체화     : done, p1, 2026-05-11, 3d
-        요구사항 분석 및 기능 정의       : done, p2, 2026-05-12, 4d
-        WBS · 일정 수립                  : done, p3, 2026-05-14, 3d
+    section 기획 (10주차)
+        주제 선정          : done, p1, 2026-05-11, 3d
+        요구사항 분석      : done, p2, 2026-05-12, 4d
+        WBS 수립           : done, p3, 2026-05-14, 3d
 
-    section 🎨 설계 (11주차)
-        화면 설계 (와이어프레임)         : done, d1, 2026-05-18, 4d
-        아키텍처 · 데이터 구조 설계      : done, d2, 2026-05-19, 3d
-        개발 환경 구성 (Flutter · API)   : done, d3, 2026-05-18, 7d
+    section 설계 (11주차)
+        화면 설계          : done, d1, 2026-05-18, 4d
+        아키텍처 설계      : done, d2, 2026-05-19, 3d
+        개발환경 구성      : done, d3, 2026-05-18, 7d
 
-    section ⚙️ 핵심 기능 개발 (12주차)
-        터미널 검색 · 버스 조회          : done, f1, 2026-05-18, 5d
-        좌석 선택 · 혼잡도 시각화        : done, f2, 2026-05-20, 5d
-        결제 흐름 · QR 모바일 발권       : done, f3, 2026-05-22, 6d
-        예매 내역 · 티켓 상세            : done, f4, 2026-05-24, 5d
-        회원가입 · 로그인 · 계정 찾기    : done, f5, 2026-05-18, 7d
-        마이페이지 · 프로필 사진         : done, f6, 2026-05-25, 5d
-        GPS 수면 모드 (백그라운드)       : done, f7, 2026-05-26, 4d
-        고객센터 챗봇                    : done, f8, 2026-05-27, 3d
-        즐겨찾기 · 쿠폰 · 공지 · 이벤트 : done, f9, 2026-05-26, 4d
-        4개국어 지원 (한·영·중·일)       : done, f10, 2026-05-25, 5d
-        중간 발표                        : milestone, m1, 2026-05-31, 0d
+    section 핵심기능 (12주차)
+        버스 검색·조회     : done, f1, 2026-05-18, 5d
+        좌석 선택·혼잡도   : done, f2, 2026-05-20, 5d
+        결제·QR 발권       : done, f3, 2026-05-22, 6d
+        예매내역·티켓      : done, f4, 2026-05-24, 5d
+        회원가입·로그인    : done, f5, 2026-05-18, 7d
+        마이페이지         : done, f6, 2026-05-25, 5d
+        GPS 수면모드       : done, f7, 2026-05-26, 4d
+        챗봇               : done, f8, 2026-05-27, 3d
+        즐겨찾기·쿠폰·공지 : done, f9, 2026-05-26, 4d
+        4개국어 지원       : done, f10, 2026-05-25, 5d
+        중간 발표          : milestone, m1, 2026-05-31, 0d
 
-    section 🔧 추가 기능 (13~14주차)
-        UX 개선 · QR 발권 고도화         : active, a1, 2026-06-01, 7d
-        지도 기능 구현 (Google Maps)     : a2, 2026-06-08, 7d
+    section 추가기능 (13~14주차)
+        UX개선·QR고도화    : active, a1, 2026-06-01, 7d
+        지도기능 구현      : a2, 2026-06-08, 7d
 
-    section 🏁 마무리 (15주차)
-        통합 테스트 · 버그 수정          : r1, 2026-06-15, 4d
-        최종 발표                        : milestone, m2, 2026-06-18, 0d
+    section 마무리 (15주차)
+        통합 테스트        : r1, 2026-06-15, 4d
+        최종 발표          : milestone, m2, 2026-06-18, 0d
+      </div>
       </div>
     </div>
 
