@@ -30,7 +30,8 @@
     .gantt-row { display: flex; align-items: center; margin-bottom: 3px; min-height: 24px; }
     .gantt-label { width: 170px; flex-shrink: 0; padding-right: 10px; font-size: 12px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .gantt-track { flex: 1; background: #f1f5f9; border-radius: 4px; height: 20px; position: relative; }
-    .gantt-bar { position: absolute; top: 0; height: 100%; border-radius: 4px; }
+    .gantt-bar { position: absolute; top: 0; height: 100%; border-radius: 4px; display: flex; align-items: center; overflow: hidden; }
+    .gantt-bar span { padding: 0 6px; font-size: 11px; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bar-done   { background: #22c55e; }
     .bar-active { background: #3b82f6; }
     .bar-plan   { background: #94a3b8; }
@@ -194,7 +195,7 @@ mindmap
               <div class="gantt-label">${t.name}</div>
               <div class="gantt-track">
                 <div class="gantt-today" style="left:${pct(TODAY)};"></div>
-                <div class="gantt-bar bar-${t.type}" style="left:${pct(t.start)};width:${pct(t.dur)};"></div>
+                <div class="gantt-bar bar-${t.type}" style="left:${pct(t.start)};width:${pct(t.dur)};"><span>${t.name}</span></div>
               </div>
             </div>`;
         }
