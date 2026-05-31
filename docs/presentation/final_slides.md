@@ -142,7 +142,7 @@ style: |
 
   <div style="background:#ede9fe; border-left:5px solid #7c3aed; border-radius:7px; padding:8px 14px;">
     <strong style="color:#6d28d9;">⚡ State Layer &nbsp;·&nbsp; Provider (ChangeNotifier)</strong><br>
-    <span style="color:#7c3aed;">AuthProvider &nbsp;·&nbsp; BookingProvider &nbsp;·&nbsp; LanguageProvider &nbsp;·&nbsp; FavoriteProvider</span>
+    <span style="color:#7c3aed;">Auth(인증) &nbsp;·&nbsp; Booking(예매) &nbsp;·&nbsp; Language(언어) &nbsp;·&nbsp; Favorite(즐겨찾기)</span>
   </div>
 
   <div style="display:grid; grid-template-columns:3fr 2fr; gap:10px; margin-top:2px;">
@@ -165,11 +165,14 @@ style: |
       </div>
     </div>
     <div style="display:flex; flex-direction:column; gap:5px;">
-      <div style="text-align:center; color:#64748b; font-size:0.9em;">↕ 로컬 저장</div>
+      <div style="text-align:center; color:#64748b; font-size:0.9em;">↕ 로컬 · 지도</div>
       <div style="background:#dcfce7; border-left:4px solid #16a34a; border-radius:6px; padding:8px 12px;">
         <strong style="color:#166534;">💾 SharedPreferences</strong><br>
-        <span style="color:#15803d; font-size:0.88em;">로그인 · 즐겨찾기 · 언어</span><br>
-        <span style="color:#6b7280; font-size:0.82em;">앱 종료 후에도 유지</span>
+        <span style="color:#15803d; font-size:0.88em;">로그인 · 즐겨찾기 · 언어</span>
+      </div>
+      <div style="background:#e0f2fe; border-left:4px solid #0284c7; border-radius:6px; padding:8px 12px;">
+        <strong style="color:#0369a1;">🗺️ Google Maps API</strong><br>
+        <span style="color:#0284c7; font-size:0.88em;">지도기능 <em>(예정)</em></span>
       </div>
     </div>
   </div>
