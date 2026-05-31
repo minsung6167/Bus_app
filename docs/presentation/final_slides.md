@@ -128,33 +128,63 @@ style: |
 
 ## 05. 아키텍처
 
+<div class="cols2">
+<div>
+
 ```mermaid
 flowchart LR
-    subgraph UI["🖥️ UI Layer  ·  Screens / Widgets"]
-        SC[홈 · 예매 · 마이페이지\n로그인 · 티켓 상세]
+    subgraph UI["🖥️ UI Layer"]
+        SC[Screens\nWidgets]
     end
-    subgraph STATE["⚡ State  ·  Provider"]
-        PV[AuthProvider\nBookingProvider\nLanguageProvider\nFavoriteProvider]
+    subgraph STATE["⚡ Provider"]
+        PV[Auth · Booking\nLanguage · Favorite]
     end
-    subgraph SVC["🔧 Service Layer"]
+    subgraph SVC["🔧 Service"]
         BS[BusApiService]
-        SM[SleepModeTask\n백그라운드]
+        SM[SleepModeTask]
     end
     subgraph DATA["💾 Data"]
-        API[공공데이터포털\n시외버스 운행정보 API]
-        SP[(SharedPreferences\n로컬 저장)]
-        MD[Mock Data\n폴백]
+        API[공공버스 API]
+        SP[(SharedPrefs)]
+        MD[Mock Data]
     end
-    GPS["📍 Geolocator\nGPS"]
+    GPS["📍 GPS"]
 
-    SC <-->|watch / read| PV
+    SC <-->|watch/read| PV
     PV -->|HTTP| BS
     PV <-->|persist| SP
     BS --> API
-    BS -.->|API 실패 시| MD
-    SC -->|Foreground Service| SM
+    BS -.->|폴백| MD
+    SC -->|Foreground| SM
     SM --> GPS
 ```
+
+</div>
+<div style="font-size:0.82em; line-height:1.7;">
+
+**🖥️ UI Layer**
+화면(Screens)이 Provider를 구독
+→ 상태 변경 시 자동으로 화면 갱신
+
+**⚡ Provider (상태 관리)**
+`ChangeNotifier` 기반 4개 Provider
+로그인·예매·언어·즐겨찾기 상태 보관
+
+**🔧 Service Layer**
+`BusApiService` — 공공API 호출, 실패 시 Mock Data로 자동 대체
+`SleepModeTask` — 위젯 트리 밖 백그라운드 독립 실행
+
+**💾 Data Layer**
+공공데이터포털 API — 실시간 버스 운행정보
+SharedPreferences — 앱 종료 후에도 로컬 유지
+Mock Data — API 장애 시 폴백 데이터
+
+**📍 GPS (Geolocator)**
+SleepModeTask가 15초마다 위치 체크
+목적지 반경 진입 시 진동 알림 전송
+
+</div>
+</div>
 
 ---
 

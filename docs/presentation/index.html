@@ -362,32 +362,54 @@ code { font-size: 0.8em; }
 .sub { font-size:0.72em; text-align:center; color:#555; margin-top:5px; }
 ;" data-marpit-pagination-total="13">
 <h2 id="05-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">05. 아키텍처</h2>
+<div class="cols2">
+<div>
 <pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-mermaid">flowchart LR
-    subgraph UI[&quot;<img class="emoji" draggable="false" alt="🖥" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f5a5.svg" data-marp-twemoji=""/> UI Layer  ·  Screens / Widgets&quot;]
-        SC[홈 · 예매 · 마이페이지\n로그인 · 티켓 상세]
+    subgraph UI[&quot;<img class="emoji" draggable="false" alt="🖥" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f5a5.svg" data-marp-twemoji=""/> UI Layer&quot;]
+        SC[Screens\nWidgets]
     end
-    subgraph STATE[&quot;<img class="emoji" draggable="false" alt="⚡" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/26a1.svg" data-marp-twemoji=""/> State  ·  Provider&quot;]
-        PV[AuthProvider\nBookingProvider\nLanguageProvider\nFavoriteProvider]
+    subgraph STATE[&quot;<img class="emoji" draggable="false" alt="⚡" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/26a1.svg" data-marp-twemoji=""/> Provider&quot;]
+        PV[Auth · Booking\nLanguage · Favorite]
     end
-    subgraph SVC[&quot;<img class="emoji" draggable="false" alt="🔧" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f527.svg" data-marp-twemoji=""/> Service Layer&quot;]
+    subgraph SVC[&quot;<img class="emoji" draggable="false" alt="🔧" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f527.svg" data-marp-twemoji=""/> Service&quot;]
         BS[BusApiService]
-        SM[SleepModeTask\n백그라운드]
+        SM[SleepModeTask]
     end
     subgraph DATA[&quot;<img class="emoji" draggable="false" alt="💾" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f4be.svg" data-marp-twemoji=""/> Data&quot;]
-        API[공공데이터포털\n시외버스 운행정보 API]
-        SP[(SharedPreferences\n로컬 저장)]
-        MD[Mock Data\n폴백]
+        API[공공버스 API]
+        SP[(SharedPrefs)]
+        MD[Mock Data]
     end
-    GPS[&quot;<img class="emoji" draggable="false" alt="📍" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f4cd.svg" data-marp-twemoji=""/> Geolocator\nGPS&quot;]
+    GPS[&quot;<img class="emoji" draggable="false" alt="📍" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f4cd.svg" data-marp-twemoji=""/> GPS&quot;]
 
-    SC &lt;--&gt;|watch / read| PV
+    SC &lt;--&gt;|watch/read| PV
     PV --&gt;|HTTP| BS
     PV &lt;--&gt;|persist| SP
     BS --&gt; API
-    BS -.-&gt;|API 실패 시| MD
-    SC --&gt;|Foreground Service| SM
+    BS -.-&gt;|폴백| MD
+    SC --&gt;|Foreground| SM
     SM --&gt; GPS
 </code></pre>
+</div>
+<div style="font-size:0.82em; line-height:1.7;">
+<p><strong><img class="emoji" draggable="false" alt="🖥️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f5a5.svg" data-marp-twemoji=""/> UI Layer</strong><br />
+화면(Screens)이 Provider를 구독<br />
+→ 상태 변경 시 자동으로 화면 갱신</p>
+<p><strong><img class="emoji" draggable="false" alt="⚡" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/26a1.svg" data-marp-twemoji=""/> Provider (상태 관리)</strong><br />
+<code>ChangeNotifier</code> 기반 4개 Provider<br />
+로그인·예매·언어·즐겨찾기 상태 보관</p>
+<p><strong><img class="emoji" draggable="false" alt="🔧" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f527.svg" data-marp-twemoji=""/> Service Layer</strong><br />
+<code>BusApiService</code> — 공공API 호출, 실패 시 Mock Data로 자동 대체<br />
+<code>SleepModeTask</code> — 위젯 트리 밖 백그라운드 독립 실행</p>
+<p><strong><img class="emoji" draggable="false" alt="💾" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f4be.svg" data-marp-twemoji=""/> Data Layer</strong><br />
+공공데이터포털 API — 실시간 버스 운행정보<br />
+SharedPreferences — 앱 종료 후에도 로컬 유지<br />
+Mock Data — API 장애 시 폴백 데이터</p>
+<p><strong><img class="emoji" draggable="false" alt="📍" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f4cd.svg" data-marp-twemoji=""/> GPS (Geolocator)</strong><br />
+SleepModeTask가 15초마다 위치 체크<br />
+목적지 반경 진입 시 진동 알림 전송</p>
+</div>
+</div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section data-paginate="true" data-theme="default" data-style="section {
   font-family: 'Noto Sans KR', sans-serif;
