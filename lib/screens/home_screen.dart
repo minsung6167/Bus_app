@@ -180,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = context.watch<AuthProvider>().currentUser;
 
     return Container(
-      height: 200,
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -192,8 +191,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 52),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 52),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const Spacer(),
+              const SizedBox(height: 20),
               if (user != null)
                 Text(
                   AppStrings.fmt(lang, 'welcomeUser', {'name': user.name}),
