@@ -7,74 +7,41 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Noto Sans KR', 'Segoe UI', sans-serif;
-      background: #f8fafc;
-      color: #1e293b;
-      min-height: 100vh;
-    }
-    header {
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color: white;
-      padding: 28px 40px;
-    }
+    body { font-family: 'Noto Sans KR', 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
+    header { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; padding: 28px 40px; }
     header h1 { font-size: 1.6rem; font-weight: 700; }
     header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
-    nav {
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 40px;
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-    nav a {
-      color: #2563eb;
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
-    }
+    nav { background: white; border-bottom: 1px solid #e2e8f0; padding: 12px 40px; display: flex; gap: 16px; align-items: center; }
+    nav a { color: #2563eb; text-decoration: none; font-size: 0.88rem; font-weight: 500; }
     nav a:hover { text-decoration: underline; }
-    .badge {
-      background: #dbeafe;
-      color: #1d4ed8;
-      border-radius: 999px;
-      padding: 2px 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-    main { padding: 32px 40px; max-width: 1200px; margin: 0 auto; }
-    h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: #1e3a8a; }
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      padding: 28px 32px;
-      margin-bottom: 28px;
-      overflow-x: auto;
-    }
+    .badge { background: #dbeafe; color: #1d4ed8; border-radius: 999px; padding: 2px 10px; font-size: 0.78rem; font-weight: 600; }
+    main { padding: 32px 40px; max-width: 1100px; margin: 0 auto; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 28px 32px; margin-bottom: 28px; }
+    h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: #1e3a8a; }
+
+    /* ── Gantt ── */
+    .gantt { width: 100%; font-size: 12.5px; }
+    .gantt-head { display: flex; margin-bottom: 6px; }
+    .gantt-head-label { width: 170px; flex-shrink: 0; }
+    .gantt-head-dates { flex: 1; display: flex; justify-content: space-between; color: #64748b; font-size: 11px; padding: 0 2px; }
+    .gantt-section-row { display: flex; align-items: center; margin: 10px 0 4px; }
+    .gantt-section-label { width: 170px; flex-shrink: 0; }
+    .gantt-section-tag { background: #1e3a8a; color: white; border-radius: 5px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+    .gantt-row { display: flex; align-items: center; margin-bottom: 3px; min-height: 24px; }
+    .gantt-label { width: 170px; flex-shrink: 0; padding-right: 10px; font-size: 12px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gantt-track { flex: 1; background: #f1f5f9; border-radius: 4px; height: 20px; position: relative; }
+    .gantt-bar { position: absolute; top: 0; height: 100%; border-radius: 4px; }
+    .bar-done   { background: #22c55e; }
+    .bar-active { background: #3b82f6; }
+    .bar-plan   { background: #94a3b8; }
+    .gantt-milestone { position: absolute; top: 3px; width: 14px; height: 14px; background: #f97316; transform: translateX(-7px) rotate(45deg); border-radius: 2px; }
+    .gantt-today { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #ef4444; opacity: 0.7; border-radius: 1px; }
+    .legend { display: flex; gap: 18px; margin-bottom: 18px; font-size: 12px; }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+    /* ── MindMap ── */
     .mermaid svg { width: 100% !important; height: auto !important; }
-    .gantt-wrap { overflow-x: auto; }
-    .legend {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-      font-size: 0.82rem;
-    }
-    .legend span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .dot {
-      width: 12px; height: 12px;
-      border-radius: 3px;
-      display: inline-block;
-    }
-    .dot-done   { background: #22c55e; }
-    .dot-active { background: #3b82f6; }
-    .dot-plan   { background: #94a3b8; }
   </style>
 </head>
 <body>
@@ -82,7 +49,6 @@
     <h1>🚌 시외버스 통합 예약 앱 — WBS</h1>
     <p>최민성 · 신구대학교 · 2026 | Work Breakdown Structure</p>
   </header>
-
   <nav>
     <a href="../">← 홈</a>
     <a href="../presentation/">📊 발표 자료</a>
@@ -90,54 +56,16 @@
   </nav>
 
   <main>
-    <div class="legend">
-      <span><span class="dot dot-done"></span> 완료</span>
-      <span><span class="dot dot-active"></span> 진행 중 / 예정</span>
-      <span><span class="dot dot-plan"></span> 계획</span>
-    </div>
-
     <div class="card">
       <h2>📅 전체 일정 (Gantt)</h2>
-      <div class="gantt-wrap">
-      <div class="mermaid">
-%%{init: {'gantt': {'leftPadding': 160, 'fontSize': 13}}}%%
-gantt
-    title 개발 일정
-    dateFormat YYYY-MM-DD
-    todayMarker on
-
-    section 기획 (10주차)
-        주제 선정          : done, p1, 2026-05-11, 3d
-        요구사항 분석      : done, p2, 2026-05-12, 4d
-        WBS 수립           : done, p3, 2026-05-14, 3d
-
-    section 설계 (11주차)
-        화면 설계          : done, d1, 2026-05-18, 4d
-        아키텍처 설계      : done, d2, 2026-05-19, 3d
-        개발환경 구성      : done, d3, 2026-05-18, 7d
-
-    section 핵심기능 (12주차)
-        버스 검색·조회     : done, f1, 2026-05-18, 5d
-        좌석 선택·혼잡도   : done, f2, 2026-05-20, 5d
-        결제·QR 발권       : done, f3, 2026-05-22, 6d
-        예매내역·티켓      : done, f4, 2026-05-24, 5d
-        회원가입·로그인    : done, f5, 2026-05-18, 7d
-        마이페이지         : done, f6, 2026-05-25, 5d
-        GPS 수면모드       : done, f7, 2026-05-26, 4d
-        챗봇               : done, f8, 2026-05-27, 3d
-        즐겨찾기·쿠폰·공지 : done, f9, 2026-05-26, 4d
-        4개국어 지원       : done, f10, 2026-05-25, 5d
-        중간 발표          : milestone, m1, 2026-05-31, 0d
-
-    section 추가기능 (13~14주차)
-        UX개선·QR고도화    : active, a1, 2026-06-01, 7d
-        지도기능 구현      : a2, 2026-06-08, 7d
-
-    section 마무리 (15주차)
-        통합 테스트        : r1, 2026-06-15, 4d
-        최종 발표          : milestone, m2, 2026-06-18, 0d
+      <div class="legend">
+        <span><span class="dot" style="background:#22c55e;"></span>완료</span>
+        <span><span class="dot" style="background:#3b82f6;"></span>진행 예정</span>
+        <span><span class="dot" style="background:#94a3b8;"></span>계획</span>
+        <span><span class="dot" style="background:#f97316; transform:rotate(45deg);"></span>마일스톤</span>
+        <span><span class="dot" style="background:#ef4444;"></span>오늘 (5/31)</span>
       </div>
-      </div>
+      <div class="gantt" id="gantt"></div>
     </div>
 
     <div class="card">
@@ -177,15 +105,107 @@ mindmap
   </main>
 
   <script>
+    // 기준일: 2026-05-11 (day 0), 총 41일 (2026-06-21)
+    const TOTAL = 41;
+    const TODAY = 20; // 5/31 = day 20
+
+    function pct(day) { return (day / TOTAL * 100).toFixed(2) + '%'; }
+
+    const sections = [
+      {
+        label: '📋 기획 (10주차)',
+        tasks: [
+          { name: '주제 선정',      start: 0,  dur: 3, type: 'done' },
+          { name: '요구사항 분석',  start: 1,  dur: 4, type: 'done' },
+          { name: 'WBS 수립',       start: 3,  dur: 3, type: 'done' },
+        ]
+      },
+      {
+        label: '🎨 설계 (11주차)',
+        tasks: [
+          { name: '화면 설계',      start: 7,  dur: 4, type: 'done' },
+          { name: '아키텍처 설계',  start: 8,  dur: 3, type: 'done' },
+          { name: '개발환경 구성',  start: 7,  dur: 7, type: 'done' },
+        ]
+      },
+      {
+        label: '⚙️ 핵심기능 (12주차)',
+        tasks: [
+          { name: '버스 검색·조회', start: 7,  dur: 5, type: 'done' },
+          { name: '좌석 선택·혼잡도',start:9,  dur: 5, type: 'done' },
+          { name: '결제·QR 발권',   start: 11, dur: 6, type: 'done' },
+          { name: '예매내역·티켓',  start: 13, dur: 5, type: 'done' },
+          { name: '회원가입·로그인',start: 7,  dur: 7, type: 'done' },
+          { name: '마이페이지',     start: 14, dur: 5, type: 'done' },
+          { name: 'GPS 수면모드',   start: 15, dur: 4, type: 'done' },
+          { name: '챗봇',           start: 16, dur: 3, type: 'done' },
+          { name: '즐겨찾기·쿠폰·공지', start: 15, dur: 4, type: 'done' },
+          { name: '4개국어 지원',   start: 14, dur: 5, type: 'done' },
+          { name: '중간 발표',      start: 20, type: 'milestone' },
+        ]
+      },
+      {
+        label: '🔧 추가기능 (13~14주차)',
+        tasks: [
+          { name: 'UX개선·QR고도화',start: 21, dur: 7, type: 'active' },
+          { name: '지도기능 구현',  start: 28, dur: 7, type: 'plan' },
+        ]
+      },
+      {
+        label: '🏁 마무리 (15주차)',
+        tasks: [
+          { name: '통합 테스트',    start: 35, dur: 4, type: 'plan' },
+          { name: '최종 발표',      start: 38, type: 'milestone' },
+        ]
+      },
+    ];
+
+    // 날짜 헤더
+    const dateLabels = ['5/11','5/18','5/25','6/1','6/8','6/15','6/21'];
+
+    let html = `
+      <div class="gantt-head">
+        <div class="gantt-head-label"></div>
+        <div class="gantt-head-dates">
+          ${dateLabels.map(d => `<span>${d}</span>`).join('')}
+        </div>
+      </div>`;
+
+    sections.forEach(sec => {
+      html += `
+        <div class="gantt-section-row">
+          <div class="gantt-section-label"></div>
+          <div style="flex:1;"><span class="gantt-section-tag">${sec.label}</span></div>
+        </div>`;
+
+      sec.tasks.forEach(t => {
+        if (t.type === 'milestone') {
+          html += `
+            <div class="gantt-row">
+              <div class="gantt-label">${t.name}</div>
+              <div class="gantt-track" style="position:relative;">
+                <div class="gantt-today" style="left:${pct(TODAY)};"></div>
+                <div class="gantt-milestone" style="left:${pct(t.start)};"></div>
+              </div>
+            </div>`;
+        } else {
+          html += `
+            <div class="gantt-row">
+              <div class="gantt-label">${t.name}</div>
+              <div class="gantt-track">
+                <div class="gantt-today" style="left:${pct(TODAY)};"></div>
+                <div class="gantt-bar bar-${t.type}" style="left:${pct(t.start)};width:${pct(t.dur)};"></div>
+              </div>
+            </div>`;
+        }
+      });
+    });
+
+    document.getElementById('gantt').innerHTML = html;
+
     mermaid.initialize({ startOnLoad: true, theme: 'base',
       themeVariables: { primaryColor: '#2563eb', primaryTextColor: '#fff',
-        primaryBorderColor: '#1d4ed8', lineColor: '#64748b',
-        sectionBkgColor: '#eff6ff', altSectionBkgColor: '#f0fdf4',
-        gridColor: '#e2e8f0', doneTaskBkgColor: '#22c55e',
-        doneTaskBorderColor: '#16a34a', activeTaskBkgColor: '#3b82f6',
-        activeTaskBorderColor: '#2563eb', taskBkgColor: '#94a3b8',
-        taskBorderColor: '#64748b', critBkgColor: '#f97316',
-        critBorderColor: '#ea580c', todayLineColor: '#ef4444' }
+        primaryBorderColor: '#1d4ed8', lineColor: '#64748b' }
     });
   </script>
 </body>
