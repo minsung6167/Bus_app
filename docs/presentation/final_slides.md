@@ -128,62 +128,80 @@ style: |
 
 ## 05. 아키텍처
 
-<div class="cols2">
-<div>
+<div style="font-size:0.76em; margin-top:4px; display:flex; gap:14px;">
 
-```mermaid
-flowchart LR
-    subgraph UI["🖥️ UI Layer"]
-        SC[Screens\nWidgets]
-    end
-    subgraph STATE["⚡ Provider"]
-        PV[Auth · Booking\nLanguage · Favorite]
-    end
-    subgraph SVC["🔧 Service"]
-        BS[BusApiService]
-        SM[SleepModeTask]
-    end
-    subgraph DATA["💾 Data"]
-        API[공공버스 API]
-        SP[(SharedPrefs)]
-        MD[Mock Data]
-    end
-    GPS["📍 GPS"]
+<!-- 메인 흐름 (왼쪽) -->
+<div style="flex:3; display:flex; flex-direction:column; gap:5px;">
 
-    SC <-->|watch/read| PV
-    PV -->|HTTP| BS
-    PV <-->|persist| SP
-    BS --> API
-    BS -.->|폴백| MD
-    SC -->|Foreground| SM
-    SM --> GPS
-```
+  <div style="background:#dbeafe; border-left:5px solid #2563eb; border-radius:7px; padding:8px 14px;">
+    <strong style="color:#1e40af;">🖥️ UI Layer &nbsp;·&nbsp; Screens / Widgets</strong><br>
+    <span style="color:#3b82f6;">홈 &nbsp;·&nbsp; 예매 &nbsp;·&nbsp; 마이페이지 &nbsp;·&nbsp; 로그인 &nbsp;·&nbsp; 티켓 상세</span>
+  </div>
 
-</div>
-<div style="font-size:0.82em; line-height:1.7;">
+  <div style="text-align:center; color:#6366f1; font-weight:bold; font-size:1.1em; line-height:1.2;">⇅<br><span style="font-size:0.75em; font-weight:normal; color:#64748b;">watch / read</span></div>
 
-**🖥️ UI Layer**
-화면(Screens)이 Provider를 구독
-→ 상태 변경 시 자동으로 화면 갱신
+  <div style="background:#ede9fe; border-left:5px solid #7c3aed; border-radius:7px; padding:8px 14px;">
+    <strong style="color:#6d28d9;">⚡ State Layer &nbsp;·&nbsp; Provider (ChangeNotifier)</strong><br>
+    <span style="color:#7c3aed;">AuthProvider &nbsp;·&nbsp; BookingProvider &nbsp;·&nbsp; LanguageProvider &nbsp;·&nbsp; FavoriteProvider</span>
+  </div>
 
-**⚡ Provider (상태 관리)**
-`ChangeNotifier` 기반 4개 Provider
-로그인·예매·언어·즐겨찾기 상태 보관
-
-**🔧 Service Layer**
-`BusApiService` — 공공API 호출, 실패 시 Mock Data로 자동 대체
-`SleepModeTask` — 위젯 트리 밖 백그라운드 독립 실행
-
-**💾 Data Layer**
-공공데이터포털 API — 실시간 버스 운행정보
-SharedPreferences — 앱 종료 후에도 로컬 유지
-Mock Data — API 장애 시 폴백 데이터
-
-**📍 GPS (Geolocator)**
-SleepModeTask가 15초마다 위치 체크
-목적지 반경 진입 시 진동 알림 전송
+  <div style="display:grid; grid-template-columns:3fr 2fr; gap:10px; margin-top:2px;">
+    <div style="display:flex; flex-direction:column; gap:5px;">
+      <div style="text-align:center; color:#64748b; font-size:0.9em;">↓ HTTP 요청</div>
+      <div style="background:#fef3c7; border-left:5px solid #f59e0b; border-radius:7px; padding:8px 14px;">
+        <strong style="color:#b45309;">🔧 BusApiService</strong><br>
+        <span style="color:#78716c;">공공데이터포털 API 호출</span><br>
+        <span style="color:#9ca3af; font-size:0.88em;">└ 실패 시 Mock Data 자동 폴백</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+        <div style="background:#dcfce7; border-left:4px solid #16a34a; border-radius:6px; padding:7px 10px;">
+          <strong style="color:#166534;">🌐 공공버스 API</strong><br>
+          <span style="color:#15803d; font-size:0.88em;">data.go.kr</span>
+        </div>
+        <div style="background:#f3f4f6; border-left:4px solid #9ca3af; border-radius:6px; padding:7px 10px;">
+          <strong style="color:#374151;">📄 Mock Data</strong><br>
+          <span style="color:#6b7280; font-size:0.88em;">폴백 데이터</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:5px;">
+      <div style="text-align:center; color:#64748b; font-size:0.9em;">↕ 로컬 저장</div>
+      <div style="background:#dcfce7; border-left:4px solid #16a34a; border-radius:6px; padding:8px 12px;">
+        <strong style="color:#166534;">💾 SharedPreferences</strong><br>
+        <span style="color:#15803d; font-size:0.88em;">로그인 · 즐겨찾기 · 언어</span><br>
+        <span style="color:#6b7280; font-size:0.82em;">앱 종료 후에도 유지</span>
+      </div>
+    </div>
+  </div>
 
 </div>
+
+<!-- 수면모드 흐름 (오른쪽) -->
+<div style="flex:1.1; display:flex; flex-direction:column; gap:6px; border-left:2px dashed #c4b5fd; padding-left:14px; align-items:stretch;">
+
+  <div style="text-align:center; color:#7c3aed; font-weight:bold; font-size:0.95em;">백그라운드 독립 실행</div>
+
+  <div style="background:#fdf4ff; border-left:4px solid #a855f7; border-radius:7px; padding:8px 12px; text-align:center;">
+    <strong style="color:#7e22ce;">😴 SleepModeTask</strong><br>
+    <span style="color:#9333ea; font-size:0.88em;">Foreground Service</span>
+  </div>
+
+  <div style="text-align:center; color:#64748b; font-size:0.88em;">↓ 15초마다 체크</div>
+
+  <div style="background:#fdf4ff; border-left:4px solid #a855f7; border-radius:7px; padding:8px 12px; text-align:center;">
+    <strong style="color:#7e22ce;">📍 Geolocator</strong><br>
+    <span style="color:#9333ea; font-size:0.88em;">GPS 위치 추적</span>
+  </div>
+
+  <div style="text-align:center; color:#64748b; font-size:0.88em;">↓ 목적지 반경 진입</div>
+
+  <div style="background:#fff7ed; border-left:4px solid #f97316; border-radius:7px; padding:8px 12px; text-align:center;">
+    <strong style="color:#c2410c;">🔔 진동 알림</strong><br>
+    <span style="color:#ea580c; font-size:0.88em;">2 / 5 / 10km 선택</span>
+  </div>
+
+</div>
+
 </div>
 
 ---
