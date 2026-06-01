@@ -35,7 +35,7 @@ class BusApiService {
 
         debugPrint('[API] 터미널 페이지$pageNo 요청');
         final response =
-            await http.get(uri).timeout(const Duration(seconds: 10));
+            await http.get(uri).timeout(const Duration(seconds: 5));
 
         if (response.statusCode != 200) break;
 
@@ -95,7 +95,7 @@ class BusApiService {
       debugPrint('[API] 스케줄 요청: ${uri.toString().replaceAll(_apiKey, '***')}');
 
       final response =
-          await http.get(uri).timeout(const Duration(seconds: 10));
+          await http.get(uri).timeout(const Duration(seconds: 5));
 
       debugPrint('[API] 스케줄 응답 코드: ${response.statusCode}');
       debugPrint('[API] 스케줄 응답(앞800자): ${response.body.substring(0, response.body.length.clamp(0, 800))}');
