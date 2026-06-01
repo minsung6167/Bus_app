@@ -93,7 +93,33 @@ style: |
 
 ---
 
-## 04. 아키텍처
+## 04. 기술 스택
+
+<div class="cols2">
+<div>
+
+**개발 환경**
+
+- Flutter 3.41 (Dart)
+- VSCode · Android Studio
+- GitHub
+
+</div>
+<div>
+
+**주요 패키지 · API**
+
+- Provider — 상태 관리
+- geolocator — GPS 추적
+- 공공데이터포털 API — 버스 조회
+- Google Maps API — 지도 *(예정)*
+
+</div>
+</div>
+
+---
+
+## 05. 아키텍처
 
 <div style="font-size:0.76em; margin-top:4px; display:flex; gap:14px;">
 
@@ -176,7 +202,7 @@ style: |
 
 ---
 
-## 05. 화면 구성
+## 06. 화면 구성
 
 ![bg right:35% contain](home_screenshot.png)
 
@@ -201,7 +227,7 @@ MainScreen (하단 탭 3개)
 
 ---
 
-## 06. 핵심 구현 — GPS 수면 모드
+## 07. 핵심 구현 — GPS 수면 모드
 
 **"자다가 목적지 근처에 오면 자동으로 깨워준다"**
 
@@ -234,7 +260,7 @@ void onRepeatEvent(DateTime timestamp) async {
 
 ---
 
-## 07. 핵심 구현 — 고객센터 챗봇
+## 08. 핵심 구현 — 고객센터 챗봇
 
 **"자주 묻는 질문을 채팅 형식으로 즉시 안내"**
 
@@ -277,7 +303,7 @@ void onRepeatEvent(DateTime timestamp) async {
 
 ---
 
-## 08. 개발 한계 — 실시간 좌석 조회
+## 09. 개발 한계 — 실시간 좌석 조회
 
 <div class="warn">
 ⚠️ <strong>실시간 좌석 API는 터미널 측 독점 유료 서비스</strong>로<br>
@@ -304,7 +330,7 @@ void onRepeatEvent(DateTime timestamp) async {
 
 ---
 
-## 09. 구현 예정 — 지도 기능
+## 10. 구현 예정 — 지도 기능
 
 **주제 선택의 핵심 동기: "앱 하나로 현재 위치 확인"**
 
@@ -332,7 +358,7 @@ void onRepeatEvent(DateTime timestamp) async {
 
 ---
 
-## 10. 진행 현황
+## 11. 진행 현황
 
 | 주차 | 상태 | 내용 |
 |---|---|---|
