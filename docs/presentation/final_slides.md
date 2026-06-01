@@ -59,10 +59,10 @@ style: |
 
 | &nbsp; | 문제 상황 | 기존 방식 | 우리 앱 |
 |---|---|---|---|
-| 🗺️ | 현재 위치 확인 | 지도 앱 별도 실행 | 앱 내 지도 *(예정)* |
-| 😴 | 수면 중 도착역 놓침 | 알람 직접 설정 | GPS 수면 모드 자동 알림 |
-| 🌏 | 외국인 이용 불편 | 한국어 전용 | 한·영·중·일 4개국어 |
-| 📊 | 좌석 혼잡도 파악 불가 | 예매 전 혼잡도 모름 | 혼잡도 예측 시각화 |
+| <span style="background:#1a56db;color:white;border-radius:4px;padding:2px 8px;font-size:0.78em;font-weight:600;">위치</span> | 현재 위치 확인 | 지도 앱 별도 실행 | 앱 내 지도 *(예정)* |
+| <span style="background:#7c3aed;color:white;border-radius:4px;padding:2px 8px;font-size:0.78em;font-weight:600;">수면</span> | 수면 중 도착역 놓침 | 알람 직접 설정 | GPS 수면 모드 자동 알림 |
+| <span style="background:#0891b2;color:white;border-radius:4px;padding:2px 8px;font-size:0.78em;font-weight:600;">언어</span> | 외국인 이용 불편 | 한국어 전용 | 한·영·중·일 4개국어 |
+| <span style="background:#059669;color:white;border-radius:4px;padding:2px 8px;font-size:0.78em;font-weight:600;">좌석</span> | 좌석 혼잡도 파악 불가 | 예매 전 혼잡도 모름 | 혼잡도 예측 시각화 |
 
 ---
 
