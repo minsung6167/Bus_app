@@ -15,6 +15,14 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("org.jetbrains.kotlin")) {
+                useVersion("2.2.20")
+            }
+        }
+    }
 }
 
 plugins {
