@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../data/terminal_coordinates.dart';
 import '../theme/app_theme.dart';
@@ -19,6 +20,26 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _controller;
+  bool _locationEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestLocation();
+  }
+
+  Future<void> _requestLocation() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+
+    var perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    if (perm == LocationPermission.whileInUse || perm == LocationPermission.always) {
+      if (mounted) setState(() => _locationEnabled = true);
+    }
+  }
 
   LatLng? get _fromLatLng {
     final c = findCoord(widget.fromTerminalName);
@@ -101,7 +122,8 @@ class _MapScreenState extends State<MapScreen> {
               zoom: _zoom,
             ),
             markers: _markers,
-            myLocationButtonEnabled: false,
+            myLocationEnabled: _locationEnabled,
+            myLocationButtonEnabled: _locationEnabled,
             zoomControlsEnabled: true,
             onMapCreated: (controller) {
               _controller = controller;
