@@ -7,6 +7,7 @@ import '../l10n/terminal_names.dart';
 import '../models/booking_model.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
+import 'map_screen.dart';
 import 'sleep_mode_screen.dart';
 
 class TicketDetailScreen extends StatelessWidget {
@@ -30,11 +31,14 @@ class TicketDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.map_outlined),
             tooltip: '지도',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('지도 기능은 준비 중입니다'), duration: Duration(seconds: 2)),
-              );
-            },
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => MapScreen(
+                  fromTerminalName: booking.bus.from,
+                  toTerminalName: booking.bus.to,
+                ),
+              ),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.snooze),
