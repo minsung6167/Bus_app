@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/booking_provider.dart';
+import 'providers/card_provider.dart';
 import 'providers/favorite_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/main_screen.dart';
@@ -33,6 +34,7 @@ class BusApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BookingProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()..init()),
+        ChangeNotifierProvider(create: (_) => CardProvider()..init()),
       ],
       child: Consumer<LanguageProvider>(
         builder: (ctx, langProvider, _) => MaterialApp(

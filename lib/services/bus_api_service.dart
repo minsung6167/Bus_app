@@ -35,7 +35,7 @@ class BusApiService {
 
         debugPrint('[API] 터미널 페이지$pageNo 요청');
         final response =
-            await http.get(uri).timeout(const Duration(seconds: 5));
+            await http.get(uri).timeout(const Duration(seconds: 15));
 
         if (response.statusCode != 200) break;
 

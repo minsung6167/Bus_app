@@ -7,6 +7,7 @@ import '../l10n/terminal_names.dart';
 import '../models/bus_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/booking_provider.dart';
+import '../providers/card_provider.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 import 'auth/login_screen.dart';
@@ -34,8 +35,9 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
 
   bool get _isCardPay =>
       _payMethod == _PayMethod.normalCard ||
-      _payMethod == _PayMethod.corpCard ||
-      _payMethod == _PayMethod.myCard;
+      _payMethod == _PayMethod.corpCard;
+
+  bool get _isMyCard => _payMethod == _PayMethod.myCard;
 
   @override
   void dispose() {
@@ -52,6 +54,13 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
     if (_payMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(AppStrings.get(lang, 'selectPaymentError')),
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+    if (_isMyCard && context.read<CardProvider>().defaultCard == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('등록된 자주쓰는카드가 없습니다. 먼저 카드를 등록해주세요.'),
         behavior: SnackBarBehavior.floating,
       ));
       return;
@@ -124,6 +133,15 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
                     _SectionCard(
                       title: AppStrings.get(lang, 'cardInfo'),
                       child: _buildCardInput(lang),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // ── 자주쓰는카드 선택 시 ──────────────────
+                  if (_isMyCard) ...[
+                    _SectionCard(
+                      title: AppStrings.get(lang, 'myCards'),
+                      child: _buildMyCardInfo(),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -527,6 +545,78 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
           },
         ),
       ],
+    );
+  }
+
+  // ── 자주쓰는카드 정보 ────────────────────────────────────────────────────────
+
+  Widget _buildMyCardInfo() {
+    final card = context.watch<CardProvider>().defaultCard;
+    if (card == null) {
+      return Column(
+        children: [
+          const Text('등록된 자주쓰는카드가 없습니다.',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.credit_card_outlined, size: 16),
+            label: const Text('카드 등록하러 가기'),
+          ),
+        ],
+      );
+    }
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.75)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.credit_card, color: Colors.white, size: 32),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(card.nickname,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(card.cardType,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 10)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(card.maskedNumber,
+                    style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                        letterSpacing: 1.5)),
+              ],
+            ),
+          ),
+          const Icon(Icons.check_circle, color: Colors.white, size: 22),
+        ],
+      ),
     );
   }
 
