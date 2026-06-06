@@ -73,20 +73,55 @@ class _NoOverscroll extends ScrollBehavior {
       child;
 }
 
-class _AuthGate extends StatelessWidget {
+class _AuthGate extends StatefulWidget {
   const _AuthGate();
+
+  @override
+  State<_AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<_AuthGate> {
+  String? _loadedUserId;
+  late final AuthProvider _auth;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth = context.read<AuthProvider>();
+    _auth.addListener(_onAuthChanged);
+  }
+
+  @override
+  void dispose() {
+    _auth.removeListener(_onAuthChanged);
+    super.dispose();
+  }
+
+  void _onAuthChanged() {
+    if (_auth.isInitializing) return;
+    final userId = _auth.currentUser?.id;
+
+    if (userId != null && userId != _loadedUserId) {
+      _loadedUserId = userId;
+      context.read<BookingProvider>().loadForUser(userId);
+      context.read<CardProvider>().loadForUser(userId);
+      context.read<FavoriteProvider>().loadForUser(userId);
+    } else if (userId == null && _loadedUserId != null) {
+      _loadedUserId = null;
+      context.read<BookingProvider>().clearUser();
+      context.read<CardProvider>().clearUser();
+      context.read<FavoriteProvider>().clearUser();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-
-    // 초기화 중 스플래시
     if (auth.isInitializing) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
-
     return MainScreen(key: mainScreenKey);
   }
 }

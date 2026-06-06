@@ -60,6 +60,7 @@ class FavoriteTerminalsScreen extends StatelessWidget {
                     horizontal: 4,
                     vertical: 4,
                   ),
+                  onTap: () => Navigator.of(context).pop(t),
                   leading: Container(
                     width: 42,
                     height: 42,
@@ -87,14 +88,29 @@ class FavoriteTerminalsScreen extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.star_rounded,
-                      color: Color(0xFFF59E0B),
-                      size: 22,
-                    ),
-                    splashRadius: 18,
-                    onPressed: () => context.read<FavoriteProvider>().toggle(t),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppStrings.get(lang, 'selectFrom'),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.star_rounded,
+                          color: Color(0xFFF59E0B),
+                          size: 22,
+                        ),
+                        splashRadius: 18,
+                        onPressed: () =>
+                            context.read<FavoriteProvider>().toggle(t),
+                      ),
+                    ],
                   ),
                 );
               },

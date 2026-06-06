@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/bus_model.dart';
 import '../models/seat_model.dart';
 import '../models/booking_model.dart';
@@ -11,6 +13,44 @@ class BookingProvider extends ChangeNotifier {
   final List<Booking> bookings = [];
 
   final Map<String, int> _bookedSeatsMap = {};
+  String? _userId;
+
+  static String _bookingKey(String userId) => 'bookings_$userId';
+
+  /// 로그인 시 호출 — 해당 유저의 예매 내역 로드
+  Future<void> loadForUser(String userId) async {
+    _userId = userId;
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_bookingKey(userId));
+    final loaded = <Booking>[];
+    if (raw != null) {
+      final list = json.decode(raw) as List;
+      loaded.addAll(list.map((e) => Booking.fromJson(e as Map<String, dynamic>)));
+    }
+    bookings
+      ..clear()
+      ..addAll(loaded);
+    _bookedSeatsMap.clear();
+    notifyListeners();
+  }
+
+  void clearUser() {
+    _userId = null;
+    bookings.clear();
+    _bookedSeatsMap.clear();
+    selectedBus = null;
+    selectedSeats.clear();
+    notifyListeners();
+  }
+
+  Future<void> _save() async {
+    if (_userId == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _bookingKey(_userId!),
+      json.encode(bookings.map((b) => b.toJson()).toList()),
+    );
+  }
 
   int effectiveRemaining(Bus bus) {
     final booked = _bookedSeatsMap[bus.id] ?? 0;
@@ -139,6 +179,7 @@ class BookingProvider extends ChangeNotifier {
     _bookedSeatsMap[selectedBus!.id] =
         (_bookedSeatsMap[selectedBus!.id] ?? 0) + selectedSeats.length;
     notifyListeners();
+    _save();
     return booking;
   }
 

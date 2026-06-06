@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime _selectedDate = DateTime.now();
   List<Terminal> _terminals = [];
   bool _loadingTerminals = true;
+  final ScrollController _scrollController = ScrollController();
 
   static const _weekdaysKo = ['월', '화', '수', '목', '금', '토', '일'];
   static const _weekdaysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -41,6 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadTerminals();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTerminals() async {
@@ -75,6 +82,22 @@ class _HomeScreenState extends State<HomeScreen> {
         datePart = DateFormat('yyyy년 M월 d일').format(_selectedDate);
         return '$datePart ($day)';
     }
+  }
+
+  Terminal? _findTerminal(String name) {
+    if (_terminals.isEmpty) return null;
+    // 완전 일치
+    try { return _terminals.firstWhere((t) => t.name == name); } catch (_) {}
+    // 포함 탐색 (긴 키 우선)
+    final matches = _terminals
+        .where((t) => t.name.contains(name) || name.contains(t.name))
+        .toList()
+      ..sort((a, b) => b.name.length.compareTo(a.name.length));
+    return matches.isNotEmpty ? matches.first : null;
+  }
+
+  void setFromTerminal(Terminal terminal) {
+    setState(() => _fromTerminal = terminal);
   }
 
   void _swapTerminals() {
@@ -149,8 +172,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final lang = context.watch<LanguageProvider>().langCode;
 
     return Scaffold(
-      endDrawer: const _AppDrawer(),
+      endDrawer: _AppDrawer(onFavoriteSelected: setFromTerminal),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -391,35 +415,35 @@ class _HomeScreenState extends State<HomeScreen> {
           spacing: 8,
           runSpacing: 8,
           children: routes.map((route) {
-            return GestureDetector(
-              onTap: () {
-                if (_terminals.isEmpty) return;
-                final from = _terminals.firstWhere(
-                  (t) => t.name == route['from'],
-                  orElse: () => _terminals.first,
-                );
-                final to = _terminals.firstWhere(
-                  (t) => t.name == route['to'],
-                  orElse: () => _terminals.last,
-                );
-                setState(() {
-                  _fromTerminal = from;
-                  _toTerminal = to;
-                });
-              },
-              child: Container(
+            return Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              elevation: 1,
+              shadowColor: Colors.black.withValues(alpha: 0.08),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () async {
+                  if (_loadingTerminals) {
+                    await Future.delayed(const Duration(milliseconds: 500));
+                  }
+                  final from = _findTerminal(route['from']!);
+                  final to = _findTerminal(route['to']!);
+                  if (from == null || to == null) return;
+                  setState(() {
+                    _fromTerminal = from;
+                    _toTerminal = to;
+                  });
+                  _scrollController.animateTo(
+                    0,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                  );
+                },
+                child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: AppColors.divider),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -447,6 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+              ),
               ),
             );
           }).toList(),
@@ -916,11 +941,22 @@ class _TerminalTile extends StatelessWidget {
 // ─── 사이드바 드로어 ───────────────────────────────────────────────
 
 class _AppDrawer extends StatelessWidget {
-  const _AppDrawer();
+  final void Function(Terminal terminal)? onFavoriteSelected;
+  const _AppDrawer({this.onFavoriteSelected});
 
   void _go(BuildContext context, Widget screen) {
     Navigator.pop(context);
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+  }
+
+  Future<void> _goFavorites(BuildContext context) async {
+    Navigator.pop(context); // 드로어 닫기
+    final result = await Navigator.of(context).push<Terminal>(
+      MaterialPageRoute(builder: (_) => const FavoriteTerminalsScreen()),
+    );
+    if (result != null) {
+      onFavoriteSelected?.call(result);
+    }
   }
 
   @override
@@ -995,8 +1031,7 @@ class _AppDrawer extends StatelessWidget {
                   icon: Icons.star_rounded,
                   iconColor: const Color(0xFFF59E0B),
                   label: AppStrings.get(lang, 'favorites'),
-                  onTap: () =>
-                      _go(context, const FavoriteTerminalsScreen()),
+                  onTap: () => _goFavorites(context),
                 ),
                 _DrawerItem(
                   icon: Icons.credit_card_outlined,

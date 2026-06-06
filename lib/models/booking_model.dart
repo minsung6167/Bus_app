@@ -20,4 +20,24 @@ class Booking {
   });
 
   bool get isUpcoming => bus.departureTime.isAfter(DateTime.now());
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'bus': bus.toJson(),
+        'seats': seats,
+        'passengerName': passengerName,
+        'passengerPhone': passengerPhone,
+        'totalPrice': totalPrice,
+        'bookedAt': bookedAt.toIso8601String(),
+      };
+
+  factory Booking.fromJson(Map<String, dynamic> j) => Booking(
+        id: j['id'] as String,
+        bus: Bus.fromJson(j['bus'] as Map<String, dynamic>),
+        seats: List<String>.from(j['seats'] as List),
+        passengerName: j['passengerName'] as String,
+        passengerPhone: j['passengerPhone'] as String,
+        totalPrice: j['totalPrice'] as int,
+        bookedAt: DateTime.parse(j['bookedAt'] as String),
+      );
 }

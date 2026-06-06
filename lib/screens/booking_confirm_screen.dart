@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 import '../l10n/terminal_names.dart';
 import '../models/bus_model.dart';
+import '../models/coupon_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/booking_provider.dart';
 import '../providers/card_provider.dart';
@@ -32,6 +33,7 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
   final _cardPwCtrl = TextEditingController();
 
   _PayMethod? _payMethod;
+  Coupon? _selectedCoupon;
 
   bool get _isCardPay =>
       _payMethod == _PayMethod.normalCard ||
@@ -118,6 +120,13 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
                   _SectionCard(
                     title: AppStrings.get(lang, 'passengerCount'),
                     child: _buildPassengerCount(provider, bus, fmt, lang),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ── 쿠폰 ────────────────────────────────
+                  _SectionCard(
+                    title: AppStrings.get(lang, 'couponSectionTitle'),
+                    child: _buildCouponSection(provider, lang),
                   ),
                   const SizedBox(height: 16),
 
@@ -548,6 +557,170 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
     );
   }
 
+  // ── 쿠폰 선택 ──────────────────────────────────────────────────────────────
+
+  Widget _buildCouponSection(BookingProvider provider, String lang) {
+    final total = provider.totalPrice;
+    final usable = availableCoupons
+        .where((c) => c.isAvailable && total >= c.minAmountInt)
+        .toList();
+
+    if (_selectedCoupon != null) {
+      final discount = _selectedCoupon!.discountAmount(total);
+      return Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.confirmation_number_outlined,
+                    size: 16, color: AppColors.primary),
+                const SizedBox(width: 6),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_selectedCoupon!.title,
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary)),
+                    Text(AppStrings.fmt(lang, 'couponDiscountApplied', {'discount': '-${_selectedCoupon!.discount}'}),
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.textSecondary)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          Text(
+            '-${NumberFormat('#,###').format(discount)}원',
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFE53935)),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => setState(() => _selectedCoupon = null),
+            child: const Icon(Icons.close, size: 18, color: AppColors.textHint),
+          ),
+        ],
+      );
+    }
+
+    if (usable.isEmpty) {
+      return Text(AppStrings.get(lang, 'noUsableCoupons'),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary));
+    }
+
+    return GestureDetector(
+      onTap: () => _showCouponSheet(usable, total, lang),
+      child: Row(
+        children: [
+          const Icon(Icons.confirmation_number_outlined,
+              size: 18, color: AppColors.primary),
+          const SizedBox(width: 8),
+          Text(AppStrings.fmt(lang, 'couponCount', {'n': '${usable.length}'}),
+              style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500)),
+          const Spacer(),
+          const Icon(Icons.chevron_right, color: AppColors.textHint),
+        ],
+      ),
+    );
+  }
+
+  void _showCouponSheet(List<Coupon> coupons, int totalPrice, String lang) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(AppStrings.get(lang, 'couponSelect'),
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            ...coupons.map((c) {
+              final discount = c.discountAmount(totalPrice);
+              return GestureDetector(
+                onTap: () {
+                  setState(() => _selectedCoupon = c);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.divider),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(c.title,
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary)),
+                            const SizedBox(height: 2),
+                            Text('${c.desc} · ${c.minAmount}',
+                                style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary)),
+                            Text(AppStrings.fmt(lang, 'couponExpireDate', {'date': c.expiry}),
+                                style: const TextStyle(
+                                    fontSize: 11, color: AppColors.textHint)),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '-${NumberFormat('#,###').format(discount)}원',
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFE53935)),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ── 자주쓰는카드 정보 ────────────────────────────────────────────────────────
 
   Widget _buildMyCardInfo() {
@@ -654,6 +827,23 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
           ),
         ],
         const Divider(height: 24, color: AppColors.divider),
+        if (_selectedCoupon != null) ...[
+          Row(
+            children: [
+              Text(AppStrings.get(lang, 'couponDiscount'),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+              const Spacer(),
+              Text(
+                '-${fmt.format(_selectedCoupon!.discountAmount(provider.totalPrice))}원',
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFE53935)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
         Row(
           children: [
             Text(AppStrings.get(lang, 'totalAmount'),
@@ -662,11 +852,13 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary)),
             const Spacer(),
-            Text('${fmt.format(provider.totalPrice)}원',
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary)),
+            Text(
+              '${fmt.format(provider.totalPrice - (_selectedCoupon?.discountAmount(provider.totalPrice) ?? 0))}원',
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary),
+            ),
           ],
         ),
       ],

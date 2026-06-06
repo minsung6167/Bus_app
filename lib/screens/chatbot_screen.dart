@@ -1,33 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../l10n/app_strings.dart';
+import '../l10n/chatbot_strings.dart';
+import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
-
-const _faqs = [
-  {
-    'q': '예매 취소는 어떻게 하나요?',
-    'a': '마이페이지 → 예매내역 탭에서 취소할 예매를 선택한 후 [취소] 버튼을 누르시면 됩니다.\n\n출발 1시간 전까지는 100% 환불이 가능합니다.',
-    'keywords': ['취소', '환불', 'cancel', 'refund'],
-  },
-  {
-    'q': '모바일 발권은 어떻게 사용하나요?',
-    'a': '예매 완료 후 예매내역에서 QR코드를 확인할 수 있습니다.\n\n버스 탑승 시 기사님께 QR코드를 보여주시면 별도 발권 없이 탑승 가능합니다.',
-    'keywords': ['발권', 'qr', 'QR', '모바일', '탑승', 'ticket'],
-  },
-  {
-    'q': '짐은 얼마나 가져갈 수 있나요?',
-    'a': '좌석 1개당 20kg 이내의 수하물을 무료로 보관하실 수 있습니다.\n\n초과 시 추가 요금이 발생할 수 있으니 터미널에 문의해 주세요.',
-    'keywords': ['짐', '수하물', '가방', '무게', 'luggage', 'baggage'],
-  },
-  {
-    'q': '앱 언어를 바꾸고 싶어요',
-    'a': '마이페이지 → 언어 설정에서 한국어, English, 中文, 日本語 중 원하는 언어를 선택하실 수 있습니다.',
-    'keywords': ['언어', '영어', '중국어', '일본어', 'language', '바꾸'],
-  },
-  {
-    'q': '회원가입 없이 예매할 수 있나요?',
-    'a': '비회원 예매는 지원하지 않습니다. 로그인 후 예매가 가능합니다.\n\n회원가입은 이메일 주소만 있으면 빠르게 완료할 수 있습니다.',
-    'keywords': ['비회원', '회원가입', '로그인', '가입', 'login', 'signup'],
-  },
-];
 
 class _ChatMessage {
   final String text;
@@ -51,7 +27,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    _addBot('안녕하세요! 시외버스 예약 앱 고객센터입니다 😊\n자주 묻는 질문을 선택하거나 직접 입력해 주세요.');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final lang = context.read<LanguageProvider>().langCode;
+      _addBot(AppStrings.get(lang, 'chatbotGreeting'));
+    });
   }
 
   @override
@@ -100,9 +79,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     _controller.clear();
     _addUser(text);
 
+    final lang = context.read<LanguageProvider>().langCode;
+    final faqs = getChatbotFaqs(lang);
     final lower = text.toLowerCase();
     Map<String, dynamic>? matched;
-    for (final faq in _faqs) {
+    for (final faq in faqs) {
       final keywords = faq['keywords'] as List<String>;
       if (keywords.any((k) => lower.contains(k.toLowerCase()))) {
         matched = faq;
@@ -114,7 +95,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       if (matched != null) {
         _addBot(matched['a'] as String);
       } else {
-        _addBot('죄송해요, 해당 질문에 대한 답변을 찾지 못했어요 😅\n아래 자주 묻는 질문을 이용해 주세요.');
+        _addBot(AppStrings.get(lang, 'chatbotNoAnswer'));
       }
       setState(() => _faqVisible = true);
     });
@@ -127,23 +108,28 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Row(
-          children: [
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Colors.white24,
-              child: Icon(Icons.support_agent, size: 18, color: Colors.white),
-            ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('고객센터 챗봇', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                Text('자동응답', style: TextStyle(fontSize: 11, color: Colors.white70)),
-              ],
-            ),
-          ],
-        ),
+        title: Builder(builder: (ctx) {
+          final lang = ctx.watch<LanguageProvider>().langCode;
+          return Row(
+            children: [
+              const CircleAvatar(
+                radius: 15,
+                backgroundColor: Colors.white24,
+                child: Icon(Icons.support_agent, size: 18, color: Colors.white),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppStrings.get(lang, 'chatbotTitle'),
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  Text(AppStrings.get(lang, 'chatbotAuto'),
+                      style: const TextStyle(fontSize: 11, color: Colors.white70)),
+                ],
+              ),
+            ],
+          );
+        }),
       ),
       body: Column(
         children: [
@@ -163,20 +149,23 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   Widget _buildFaqChips() {
+    final lang = context.read<LanguageProvider>().langCode;
+    final faqs = getChatbotFaqs(lang);
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 4, bottom: 6),
-            child: Text('자주 묻는 질문', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 6),
+            child: Text(AppStrings.get(lang, 'faqTitle'),
+                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
           ),
           Wrap(
             spacing: 8,
             runSpacing: 6,
-            children: _faqs.map((faq) {
+            children: faqs.map((faq) {
               return GestureDetector(
                 onTap: () => _onFaqTap(faq),
                 child: Container(
@@ -215,7 +204,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               controller: _controller,
               onSubmitted: (_) => _onSendText(),
               decoration: InputDecoration(
-                hintText: '질문을 입력하세요...',
+                hintText: AppStrings.get(context.read<LanguageProvider>().langCode, 'chatbotHint'),
                 hintStyle: const TextStyle(fontSize: 14, color: AppColors.textHint),
                 filled: true,
                 fillColor: const Color(0xFFF3F4F6),

@@ -30,7 +30,7 @@ class TicketDetailScreen extends StatelessWidget {
         actions: isPast ? null : [
           IconButton(
             icon: const Icon(Icons.map_outlined),
-            tooltip: '지도',
+            tooltip: AppStrings.get(lang, 'mapTooltip'),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => MapScreen(
@@ -42,7 +42,7 @@ class TicketDetailScreen extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.snooze),
-            tooltip: '수면 모드 설정',
+            tooltip: AppStrings.get(lang, 'sleepModeTooltip'),
             color: const Color(0xFF7C3AED),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -141,7 +141,7 @@ class TicketDetailScreen extends StatelessWidget {
                         _Row(
                           icon: Icons.directions_bus_outlined,
                           label: AppStrings.get(lang, 'busType'),
-                          value: booking.bus.busType,
+                          value: TerminalNames.translateBusType(booking.bus.busType, lang),
                         ),
                         const Divider(height: 28, color: AppColors.divider),
                         Row(
@@ -174,12 +174,12 @@ class TicketDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.qr_code, size: 20, color: AppColors.primary),
-                      SizedBox(width: 8),
-                      Text('모바일 발권',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      const Icon(Icons.qr_code, size: 20, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(AppStrings.get(lang, 'mobileTicket'),
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -195,8 +195,8 @@ class TicketDetailScreen extends StatelessWidget {
                   Text(booking.id,
                     style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, letterSpacing: 1.5)),
                   const SizedBox(height: 4),
-                  const Text('승차 시 QR코드를 제시해주세요',
-                    style: TextStyle(fontSize: 11, color: AppColors.textHint)),
+                  Text(AppStrings.get(lang, 'showQrHint'),
+                    style: const TextStyle(fontSize: 11, color: AppColors.textHint)),
                 ],
               ),
             ),

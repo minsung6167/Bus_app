@@ -304,7 +304,7 @@ class SeatSelectionScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     _sectionTitle(AppStrings.get(lang, 'penalty')),
                     const SizedBox(height: 10),
-                    _buildPenaltyTable(),
+                    _buildPenaltyTable(lang),
                   ],
                 ),
               ),
@@ -393,7 +393,7 @@ class SeatSelectionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPenaltyTable() {
+  Widget _buildPenaltyTable(String lang) {
     return Table(
       border: TableBorder.all(color: const Color(0xFFDDDDDD)),
       columnWidths: const {0: FlexColumnWidth(3), 1: FlexColumnWidth(1)},
@@ -402,10 +402,10 @@ class SeatSelectionScreen extends StatelessWidget {
           decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
           children: [
             TableCell(child: Padding(padding: const EdgeInsets.all(8),
-              child: Text('부도위약금 시기', textAlign: TextAlign.center,
+              child: Text(AppStrings.get(lang, 'penaltyTime'), textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary)))),
             TableCell(child: Padding(padding: const EdgeInsets.all(8),
-              child: Text('수수료', textAlign: TextAlign.center,
+              child: Text(AppStrings.get(lang, 'penaltyFee'), textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary)))),
           ],
         ),
@@ -416,15 +416,15 @@ class SeatSelectionScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('지정차 출발 후 4시간 이후',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                    SizedBox(height: 6),
-                    Text('* 예매 및 모바일 승차권의 경우는 출발 4시간 이후 자동취소(부도처리)',
-                      style: TextStyle(fontSize: 11, color: Color(0xFFE53935), height: 1.4)),
-                    SizedBox(height: 6),
-                    Text('*부도란?\n예매 후 버스 출발시간 이전까지 발권 또는 취소를 하지 않은 경우, 예매한 승차권을 무효 처리하는 것을 의미합니다.',
-                      style: TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.5)),
+                  children: [
+                    Text(AppStrings.get(lang, 'penaltyAfter4h'),
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                    const SizedBox(height: 6),
+                    Text(AppStrings.get(lang, 'penaltyNote'),
+                      style: const TextStyle(fontSize: 11, color: Color(0xFFE53935), height: 1.4)),
+                    const SizedBox(height: 6),
+                    Text(AppStrings.get(lang, 'penaltyDesc'),
+                      style: const TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.5)),
                   ],
                 ),
               ),

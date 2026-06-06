@@ -2,9 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 import '../data/terminal_coordinates.dart';
+import '../l10n/app_strings.dart';
+import '../providers/language_provider.dart';
 import '../services/sleep_mode_task.dart';
 import '../theme/app_theme.dart';
 
@@ -75,7 +78,8 @@ class _SleepModeScreenState extends State<SleepModeScreen>
       perm = await Geolocator.requestPermission();
     }
     if (perm == LocationPermission.deniedForever) {
-      setState(() => _errorMsg = '위치 권한이 거부됐습니다.\n설정 → 앱 권한에서 위치를 허용해 주세요.');
+      final lang = context.read<LanguageProvider>().langCode;
+      setState(() => _errorMsg = AppStrings.get(lang, 'locationPermDenied'));
       return false;
     }
     return perm == LocationPermission.whileInUse ||
@@ -87,7 +91,8 @@ class _SleepModeScreenState extends State<SleepModeScreen>
 
     final coord = findCoord(widget.destTerminalName);
     if (coord == null) {
-      setState(() => _errorMsg = '"${widget.destTerminalName}" 터미널 좌표 정보가 없습니다.');
+      final lang = context.read<LanguageProvider>().langCode;
+      setState(() => _errorMsg = AppStrings.fmt(lang, 'terminalCoordsNotFound', {'dest': widget.destTerminalName}));
       return;
     }
 
@@ -96,7 +101,8 @@ class _SleepModeScreenState extends State<SleepModeScreen>
 
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      setState(() => _errorMsg = '기기의 위치 서비스를 활성화해 주세요.');
+      final lang = context.read<LanguageProvider>().langCode;
+      setState(() => _errorMsg = AppStrings.get(lang, 'enableLocationService'));
       return;
     }
 
@@ -122,21 +128,22 @@ class _SleepModeScreenState extends State<SleepModeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().langCode;
     return WithForegroundTask(
       child: Scaffold(
         backgroundColor: _isRunning ? const Color(0xFF0D1B2A) : AppColors.background,
         appBar: AppBar(
           backgroundColor: _isRunning ? const Color(0xFF0D1B2A) : AppColors.primary,
           foregroundColor: Colors.white,
-          title: const Text('수면 모드'),
+          title: Text(AppStrings.get(lang, 'sleepMode')),
           elevation: 0,
         ),
-        body: _isRunning ? _buildActiveUI() : _buildSetupUI(),
+        body: _isRunning ? _buildActiveUI(lang) : _buildSetupUI(lang),
       ),
     );
   }
 
-  Widget _buildSetupUI() {
+  Widget _buildSetupUI(String lang) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -155,19 +162,19 @@ class _SleepModeScreenState extends State<SleepModeScreen>
               children: [
                 const Icon(Icons.snooze, size: 56, color: Color(0xFF7C3AED)),
                 const SizedBox(height: 12),
-                const Text('수면 모드',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(AppStrings.get(lang, 'sleepMode'),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text(
-                  '버스에서 주무시다가\n목적지 근처에 오면 진동으로 깨워드립니다 😴',
+                  AppStrings.get(lang, 'sleepModeDesc'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-          const Text('목적지', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+          Text(AppStrings.get(lang, 'sleepDest'), style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -186,8 +193,8 @@ class _SleepModeScreenState extends State<SleepModeScreen>
             ),
           ),
           const SizedBox(height: 24),
-          const Text('몇 km 전에 깨울까요?',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+          Text(AppStrings.get(lang, 'alertDistance'),
+              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
           const SizedBox(height: 12),
           Row(
             children: [2.0, 5.0, 10.0].map((km) {
@@ -206,7 +213,7 @@ class _SleepModeScreenState extends State<SleepModeScreen>
                       ),
                     ),
                     child: Text(
-                      '${km.toInt()}km 전',
+                      AppStrings.fmt(lang, 'kmBefore', {'km': '${km.toInt()}'}),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
@@ -245,7 +252,7 @@ class _SleepModeScreenState extends State<SleepModeScreen>
             child: ElevatedButton.icon(
               onPressed: _startService,
               icon: const Icon(Icons.snooze),
-              label: const Text('수면 모드 시작', style: TextStyle(fontSize: 16)),
+              label: Text(AppStrings.get(lang, 'startSleepMode'), style: const TextStyle(fontSize: 16)),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -257,7 +264,7 @@ class _SleepModeScreenState extends State<SleepModeScreen>
     );
   }
 
-  Widget _buildActiveUI() {
+  Widget _buildActiveUI(String lang) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -282,21 +289,21 @@ class _SleepModeScreenState extends State<SleepModeScreen>
             ),
           ),
           const SizedBox(height: 40),
-          const Text('수면 모드 실행 중',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text(AppStrings.get(lang, 'sleepModeRunning'),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 12),
           Text(
-            '${widget.destTerminalName} ${_alertKm.toInt()}km 전 알림',
+            AppStrings.fmt(lang, 'sleepModeAlert', {'dest': widget.destTerminalName, 'km': '${_alertKm.toInt()}'}),
             style: const TextStyle(fontSize: 15, color: Colors.white60),
           ),
           const SizedBox(height: 8),
-          const Text('GPS가 목적지를 감시 중입니다 🛰️',
-              style: TextStyle(fontSize: 13, color: Colors.white38)),
+          Text(AppStrings.get(lang, 'gpsMonitoring'),
+              style: const TextStyle(fontSize: 13, color: Colors.white38)),
           const SizedBox(height: 60),
           OutlinedButton.icon(
             onPressed: _stopService,
             icon: const Icon(Icons.stop_circle_outlined, color: Colors.white60),
-            label: const Text('수면 모드 종료', style: TextStyle(color: Colors.white60)),
+            label: Text(AppStrings.get(lang, 'stopSleepMode'), style: const TextStyle(color: Colors.white60)),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Colors.white24),
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
@@ -317,6 +324,7 @@ class _WakeUpDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.read<LanguageProvider>().langCode;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
@@ -332,11 +340,11 @@ class _WakeUpDialog extends StatelessWidget {
               child: const Icon(Icons.alarm, size: 44, color: Color(0xFFD97706)),
             ),
             const SizedBox(height: 20),
-            const Text('일어나세요! ⏰',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text(AppStrings.get(lang, 'wakeUpTitle'),
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Text(
-              '$destName 터미널에 거의 도착했습니다.\n내릴 준비를 해주세요.',
+              AppStrings.fmt(lang, 'wakeUpDesc', {'dest': destName}),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 15, color: AppColors.textSecondary, height: 1.5),
             ),
@@ -350,7 +358,8 @@ class _WakeUpDialog extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text(AppStrings.get(lang, 'confirm'),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
           ],

@@ -90,6 +90,7 @@ class _NoticeItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().langCode;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -113,9 +114,9 @@ class _NoticeItem extends StatelessWidget {
               color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: const Text(
-              '공지',
-              style: TextStyle(
+            child: Text(
+              AppStrings.get(lang, 'noticeLabel'),
+              style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
