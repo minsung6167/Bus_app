@@ -31,7 +31,6 @@ style: |
 ## 01. 비전 & 문제 정의
 
 <div style="text-align:center; margin:10px 0 18px;">
-  <div style="font-size:2.4em; margin-bottom:10px;">🚌</div>
   <div style="background:#1a56db; color:white; border-radius:12px; padding:18px 28px; font-size:1.05em; font-weight:bold; line-height:1.6;">
     "버스 안에서 지도 앱을 따로 켜지 않아도 되는 앱"<br>
     <span style="font-size:0.78em; font-weight:normal; opacity:0.85;">예매 · 현재 위치 · 알림을 하나의 앱에서</span>
