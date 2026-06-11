@@ -13,6 +13,7 @@ import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 import 'auth/login_screen.dart';
 import 'booking_complete_screen.dart';
+import 'my_cards_screen.dart';
 
 enum _PayMethod { normalCard, corpCard, myCard, naver, kakao }
 
@@ -287,6 +288,8 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
       children: [
         TextFormField(
           controller: _nameCtrl,
+          keyboardType: TextInputType.text,
+          textCapitalization: TextCapitalization.none,
           decoration: InputDecoration(
             labelText: AppStrings.get(lang, 'nameLabel'),
             prefixIcon: const Icon(Icons.person_outline),
@@ -732,14 +735,16 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MyCardsScreen()),
+            ),
             icon: const Icon(Icons.credit_card_outlined, size: 16),
             label: const Text('카드 등록하러 가기'),
           ),
         ],
       );
     }
-    return Container(
+    final cardWidget = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -790,6 +795,25 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
           const Icon(Icons.check_circle, color: Colors.white, size: 22),
         ],
       ),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        cardWidget,
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const MyCardsScreen()),
+          ),
+          icon: const Icon(Icons.swap_horiz, size: 16),
+          label: const Text('다른 카드 사용하기'),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+      ],
     );
   }
 
