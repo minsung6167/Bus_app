@@ -156,19 +156,29 @@ MainScreen
 </div>
 <div>
 
-**핵심 기능 목록**
+**디렉토리 구조**
 
-✅ 터미널 검색 (공공 API + fallback)<br>
-✅ 버스 목록 · 날짜 선택<br>
-✅ 좌석 선택 · 혼잡도 예측<br>
-✅ 결제 · 쿠폰 할인 · 자주쓰는카드<br>
-✅ QR 모바일 발권<br>
-✅ 예매 내역 (예정 / 지난 여행 탭)<br>
-✅ GPS 수면 모드 (Foreground Service)<br>
-✅ 실시간 지도 + 경로 (OSRM)<br>
-✅ 고객센터 챗봇 (FAQ 매칭)<br>
-✅ 즐겨찾기 · 공지사항 · 이벤트<br>
-✅ 한·영·중·일 4개국어
+```
+lib/
+├── main.dart
+├── screens/        # 화면 (UI)
+│   ├── home/
+│   ├── booking/    # 예매·결제·좌석
+│   ├── mypage/     # 마이페이지·카드·쿠폰
+│   └── auth/       # 로그인·회원가입
+├── providers/      # 상태 관리
+│   ├── auth_provider.dart
+│   ├── booking_provider.dart
+│   ├── language_provider.dart
+│   └── card_provider.dart
+├── services/       # API·비즈니스 로직
+│   └── bus_api_service.dart
+├── models/         # 데이터 모델
+├── widgets/        # 공통 위젯
+├── data/           # Mock fallback 데이터
+├── theme/          # 색상·폰트 시스템
+└── l10n/           # 다국어 문자열
+```
 
 </div>
 </div>
@@ -550,22 +560,22 @@ All tests passed!
 </div>
 <div>
 
-**수동 Happy Path 시나리오**
+**통합 테스트 (Integration Test)**
+전체 예매 흐름을 실제 앱에서 End-to-End 검증
 
 ```
-1. 앱 실행 → 홈 화면 확인
+1. 앱 실행 → 홈 화면 렌더링 확인
 2. 서울남부 → 부산종합 선택
-3. 날짜 선택 → 버스 목록 조회
-4. 버스 선택 → 좌석 선택
-5. 카드 결제 → 예약 완료
-6. 예매 내역 QR 확인
-7. 수면모드 ON → 진동 알림
-8. 언어 전환 (한→영→중→일)
+3. 날짜 선택 → 버스 목록 조회 (API 연동)
+4. 버스 선택 → 좌석 선택 → 결제 완료
+5. 예매 내역 탭 → QR 발권 확인
+6. 수면모드 ON → GPS 감지 → 진동 알림
+7. 언어 전환 (한→영→중→일) 전체 화면 검증
 ```
 
-**엣지 케이스**
-- ✅ 네트워크 없음 → fallback Mock 표시
-- ✅ 비로그인 예약 시도 → 로그인 유도
+**엣지 케이스 검증**
+- ✅ 네트워크 없음 → fallback Mock 자동 전환
+- ✅ 비로그인 예약 시도 → 로그인 유도 화면
 - ✅ 잘못된 카드 번호 → 유효성 오류 메시지
 
 </div>
@@ -618,6 +628,12 @@ All tests passed!
 - ✅ 실시간 지도 + 도로 경로 (OSRM)
 - ✅ 한·영·중·일 4개국어 완성
 - ✅ flutter analyze 경고 0건
+
+**학습 여정 & 개선 의지**
+
+- Flutter·Dart를 이 프로젝트에서 **처음 학습**, 공식 문서·커뮤니티로 독학
+- 막힌 문제마다 ADR로 기록 → **결정 근거를 문서화**하는 습관 형성
+- 실 서비스 수준의 코드 품질 기준(analyze 0건)을 스스로 설정하고 유지
 
 </div>
 <div>
