@@ -348,28 +348,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Divider(color: AppColors.divider, height: 1),
                 ),
-                InkWell(
-                  onTap: _selectDate,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today_outlined,
-                            size: 18, color: AppColors.primary),
-                        const SizedBox(width: 10),
-                        Text(
-                          _formattedDate(lang),
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary,
+                SizedBox(
+                  width: double.infinity,
+                  child: InkWell(
+                    onTap: _selectDate,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today_outlined,
+                              size: 18, color: AppColors.primary),
+                          const SizedBox(width: 10),
+                          Text(
+                            _formattedDate(lang),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.chevron_right,
-                            color: AppColors.textHint, size: 20),
-                      ],
+                          const Spacer(),
+                          const Icon(Icons.chevron_right,
+                              color: AppColors.textHint, size: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
