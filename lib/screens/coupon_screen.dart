@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
+import '../providers/booking_provider.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 
@@ -10,6 +11,7 @@ const _expired = 'expired';
 
 final _coupons = [
   {
+    'id': 'c1',
     'discount': '2,000원',
     'title': '첫 예매 축하 쿠폰',
     'desc': '신규 회원 첫 예매 혜택',
@@ -19,6 +21,7 @@ final _coupons = [
     'color': const Color(0xFF1E40AF),
   },
   {
+    'id': 'c2',
     'discount': '10%',
     'title': '봄맞이 할인 쿠폰',
     'desc': '봄맞이 특별 이벤트',
@@ -28,6 +31,7 @@ final _coupons = [
     'color': const Color(0xFF059669),
   },
   {
+    'id': 'c3',
     'discount': '3,000원',
     'title': '생일 축하 쿠폰',
     'desc': '생일을 축하드립니다 🎂',
@@ -37,6 +41,7 @@ final _coupons = [
     'color': const Color(0xFF7C3AED),
   },
   {
+    'id': '',
     'discount': '5,000원',
     'title': '추석 특별 쿠폰',
     'desc': '2025 추석 연휴 프로모션',
@@ -46,6 +51,7 @@ final _coupons = [
     'color': const Color(0xFF94A3B8),
   },
   {
+    'id': '',
     'discount': '15%',
     'title': '겨울 시즌 쿠폰',
     'desc': '2026 겨울 특별 할인',
@@ -69,16 +75,23 @@ class _CouponScreenState extends State<CouponScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>().langCode;
+    final bookingProvider = context.watch<BookingProvider>();
+
+    String effectiveStatus(Map<String, dynamic> c) {
+      final id = c['id'] as String;
+      if (c['status'] != _available) return c['status'] as String;
+      return (id.isNotEmpty && bookingProvider.isCouponUsed(id)) ? _used : _available;
+    }
 
     final filtered = _coupons.where((c) {
-      if (_selectedFilter == 1) return c['status'] == _available;
-      if (_selectedFilter == 2)
-        return c['status'] == _used || c['status'] == _expired;
+      final status = effectiveStatus(c);
+      if (_selectedFilter == 1) return status == _available;
+      if (_selectedFilter == 2) return status == _used || status == _expired;
       return true;
     }).toList();
 
     final availableCount = _coupons
-        .where((c) => c['status'] == _available)
+        .where((c) => effectiveStatus(c) == _available)
         .length;
 
     return Scaffold(
@@ -152,8 +165,11 @@ class _CouponScreenState extends State<CouponScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: filtered.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (ctx, i) =>
-                        _CouponCard(coupon: filtered[i], lang: lang),
+                    itemBuilder: (ctx, i) => _CouponCard(
+                      coupon: filtered[i],
+                      lang: lang,
+                      effectiveStatus: effectiveStatus(filtered[i]),
+                    ),
                   ),
           ),
         ],
@@ -202,22 +218,23 @@ class _FilterChip extends StatelessWidget {
 class _CouponCard extends StatelessWidget {
   final Map<String, dynamic> coupon;
   final String lang;
+  final String effectiveStatus;
 
-  const _CouponCard({required this.coupon, required this.lang});
+  const _CouponCard({required this.coupon, required this.lang, required this.effectiveStatus});
 
   @override
   Widget build(BuildContext context) {
-    final isActive = coupon['status'] == _available;
+    final isActive = effectiveStatus == _available;
     final color = coupon['color'] as Color;
 
     final String statusLabel;
     final Color statusColor;
     final Color statusBg;
-    if (coupon['status'] == _available) {
+    if (effectiveStatus == _available) {
       statusLabel = AppStrings.get(lang, 'couponAvailable');
       statusColor = AppColors.primary;
       statusBg = AppColors.primary.withOpacity(0.1);
-    } else if (coupon['status'] == _used) {
+    } else if (effectiveStatus == _used) {
       statusLabel = AppStrings.get(lang, 'couponUsed');
       statusColor = AppColors.textHint;
       statusBg = AppColors.divider;

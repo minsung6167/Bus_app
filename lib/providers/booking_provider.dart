@@ -13,9 +13,19 @@ class BookingProvider extends ChangeNotifier {
   final List<Booking> bookings = [];
 
   final Map<String, int> _bookedSeatsMap = {};
+  Set<String> _usedCouponIds = {};
   String? _userId;
 
   static String _bookingKey(String userId) => 'bookings_$userId';
+  static String _couponKey(String userId) => 'used_coupons_$userId';
+
+  bool isCouponUsed(String id) => _usedCouponIds.contains(id);
+
+  Future<void> useCoupon(String id) async {
+    _usedCouponIds.add(id);
+    notifyListeners();
+    await _saveUsedCoupons();
+  }
 
   /// 로그인 시 호출 — 해당 유저의 예매 내역 로드
   Future<void> loadForUser(String userId) async {
@@ -31,6 +41,13 @@ class BookingProvider extends ChangeNotifier {
       ..clear()
       ..addAll(loaded);
     _bookedSeatsMap.clear();
+    for (final b in loaded) {
+      _bookedSeatsMap[b.bus.id] = (_bookedSeatsMap[b.bus.id] ?? 0) + b.seats.length;
+    }
+    final couponRaw = prefs.getString(_couponKey(userId));
+    _usedCouponIds = couponRaw != null
+        ? Set<String>.from(json.decode(couponRaw) as List)
+        : {};
     notifyListeners();
   }
 
@@ -38,6 +55,7 @@ class BookingProvider extends ChangeNotifier {
     _userId = null;
     bookings.clear();
     _bookedSeatsMap.clear();
+    _usedCouponIds.clear();
     selectedBus = null;
     selectedSeats.clear();
     notifyListeners();
@@ -49,6 +67,15 @@ class BookingProvider extends ChangeNotifier {
     await prefs.setString(
       _bookingKey(_userId!),
       json.encode(bookings.map((b) => b.toJson()).toList()),
+    );
+  }
+
+  Future<void> _saveUsedCoupons() async {
+    if (_userId == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _couponKey(_userId!),
+      json.encode(_usedCouponIds.toList()),
     );
   }
 
@@ -88,6 +115,16 @@ class BookingProvider extends ChangeNotifier {
     allSeatIds.shuffle(rng);
     final occupiedIds = allSeatIds.take(occupied).toSet();
 
+    final userBookedIds = bookings
+        .where((b) =>
+            b.bus.id == bus.id &&
+            b.bus.departureTime.year == bus.departureTime.year &&
+            b.bus.departureTime.month == bus.departureTime.month &&
+            b.bus.departureTime.day == bus.departureTime.day &&
+            b.bus.departureTime.hour == bus.departureTime.hour)
+        .expand((b) => b.seats)
+        .toSet();
+
     for (int r = 1; r <= rows; r++) {
       for (final col in cols) {
         final id = '$col$r';
@@ -95,7 +132,7 @@ class BookingProvider extends ChangeNotifier {
           id: id,
           row: r,
           column: col,
-          status: occupiedIds.contains(id)
+          status: (occupiedIds.contains(id) || userBookedIds.contains(id))
               ? SeatStatus.occupied
               : SeatStatus.available,
         ));
@@ -181,6 +218,17 @@ class BookingProvider extends ChangeNotifier {
     notifyListeners();
     _save();
     return booking;
+  }
+
+  Future<void> cancelBooking(String bookingId) async {
+    final idx = bookings.indexWhere((b) => b.id == bookingId);
+    if (idx == -1) return;
+    final cancelled = bookings[idx];
+    _bookedSeatsMap[cancelled.bus.id] =
+        ((_bookedSeatsMap[cancelled.bus.id] ?? 0) - cancelled.seats.length).clamp(0, 9999);
+    bookings.removeAt(idx);
+    notifyListeners();
+    await _save();
   }
 
   void clearSelection() {

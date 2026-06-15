@@ -74,6 +74,9 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
       passengerName: _nameCtrl.text.trim(),
       passengerPhone: _phoneCtrl.text.trim(),
     );
+    if (_selectedCoupon != null) {
+      provider.useCoupon(_selectedCoupon!.id);
+    }
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => BookingCompleteScreen(booking: booking)));
   }
@@ -565,7 +568,7 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
   Widget _buildCouponSection(BookingProvider provider, String lang) {
     final total = provider.totalPrice;
     final usable = availableCoupons
-        .where((c) => c.isAvailable && total >= c.minAmountInt)
+        .where((c) => c.isAvailable && total >= c.minAmountInt && !provider.isCouponUsed(c.id))
         .toList();
 
     if (_selectedCoupon != null) {
@@ -624,6 +627,7 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
     }
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => _showCouponSheet(usable, total, lang),
       child: Row(
         children: [
