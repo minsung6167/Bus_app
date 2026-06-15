@@ -19,7 +19,10 @@ class BusCard extends StatelessWidget {
     final timeFormat = DateFormat('HH:mm');
     final priceFormat = NumberFormat('#,###');
     final remaining = context.watch<BookingProvider>().effectiveRemaining(bus);
-    final isDeparted = bus.departureTime.isBefore(DateTime.now());
+    final now = DateTime.now();
+    final isDeparted = bus.departureTime.isBefore(now);
+    final minutesUntil = bus.departureTime.difference(now).inMinutes;
+    final isOnsite = !isDeparted && minutesUntil <= 20;
     final lang = context.watch<LanguageProvider>().langCode;
 
     final typeColor = switch (bus.busType) {
@@ -144,14 +147,29 @@ class BusCard extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  ElevatedButton(
-                    onPressed: (!isDeparted && remaining > 0) ? onSelect : null,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      textStyle: const TextStyle(fontSize: 14),
+                  if (isDeparted)
+                    // 지난 버스: 버튼 비표시 (카드 상단 '출발완료' 배지로 표시됨)
+                    const SizedBox.shrink()
+                  else if (isOnsite)
+                    ElevatedButton(
+                      onPressed: null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        disabledBackgroundColor: const Color(0xFF94A3B8),
+                        disabledForegroundColor: Colors.white,
+                      ),
+                      child: Text(AppStrings.get(lang, 'onsiteBtn')),
+                    )
+                  else
+                    ElevatedButton(
+                      onPressed: remaining > 0 ? onSelect : null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        textStyle: const TextStyle(fontSize: 14),
+                      ),
+                      child: Text(AppStrings.get(lang, 'selectBtn')),
                     ),
-                    child: Text(AppStrings.get(lang, 'selectBtn')),
-                  ),
                 ],
               ),
             ],

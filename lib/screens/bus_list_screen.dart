@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,7 @@ class _BusListScreenState extends State<BusListScreen> {
   bool _loading = true;
   String? _errorMessage;
   late DateTime _selectedDate;
+  Timer? _refreshTimer;
 
   static const _weekdaysKo = ['월', '화', '수', '목', '금', '토', '일'];
   static const _weekdaysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -50,6 +52,15 @@ class _BusListScreenState extends State<BusListScreen> {
     super.initState();
     _selectedDate = widget.date;
     _fetchBuses();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 60), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _pickDate(String lang) async {
@@ -95,14 +106,17 @@ class _BusListScreenState extends State<BusListScreen> {
   }
 
   List<Bus> get _sortedBuses {
-    final filtered = _buses.toList();
+    final buses = List<Bus>.from(_buses);
     switch (_sortOption) {
       case SortOption.time:
-        filtered.sort((a, b) => a.departureTime.compareTo(b.departureTime));
+        buses.sort((a, b) => a.departureTime.compareTo(b.departureTime));
       case SortOption.price:
-        filtered.sort((a, b) => a.price.compareTo(b.price));
+        buses.sort((a, b) {
+          final cmp = a.price.compareTo(b.price);
+          return cmp != 0 ? cmp : a.departureTime.compareTo(b.departureTime);
+        });
     }
-    return filtered;
+    return buses;
   }
 
   String _dateLabel(String lang) {
