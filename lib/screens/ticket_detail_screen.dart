@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../l10n/app_strings.dart';
 import '../l10n/terminal_names.dart';
 import '../models/booking_model.dart';
+import '../providers/booking_provider.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
 import 'map_screen.dart';
@@ -14,6 +15,38 @@ class TicketDetailScreen extends StatelessWidget {
   final Booking booking;
 
   const TicketDetailScreen({super.key, required this.booking});
+
+  Future<void> _confirmCancel(BuildContext context, String lang) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(AppStrings.get(lang, 'cancelBooking')),
+        content: Text(AppStrings.get(lang, 'cancelBookingConfirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(AppStrings.get(lang, 'cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              AppStrings.get(lang, 'cancelBooking'),
+              style: const TextStyle(color: Color(0xFFE53935)),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await context.read<BookingProvider>().cancelBooking(booking.id);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppStrings.get(lang, 'cancelBookingDone'))),
+        );
+        Navigator.of(context).pop();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +234,28 @@ class TicketDetailScreen extends StatelessWidget {
               ),
             ),
 
+            // 예매 취소 버튼 (미래 예매만)
+            if (!isPast) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => _confirmCancel(context, lang),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFE53935),
+                    side: const BorderSide(color: Color(0xFFE53935)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    AppStrings.get(lang, 'cancelBooking'),
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
           ],
         ),
