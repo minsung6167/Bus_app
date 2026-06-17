@@ -103,9 +103,12 @@ class _AuthGateState extends State<_AuthGate> {
 
     if (userId != null && userId != _loadedUserId) {
       _loadedUserId = userId;
-      context.read<BookingProvider>().loadForUser(userId);
-      context.read<CardProvider>().loadForUser(userId);
-      context.read<FavoriteProvider>().loadForUser(userId);
+      // 세 프로바이더를 병렬 로드 — 각각 notifyListeners 하지만 UI 는 MainScreen 이 이미 표시된 상태
+      Future.wait([
+        context.read<BookingProvider>().loadForUser(userId),
+        context.read<CardProvider>().loadForUser(userId),
+        context.read<FavoriteProvider>().loadForUser(userId),
+      ]);
     } else if (userId == null && _loadedUserId != null) {
       _loadedUserId = null;
       context.read<BookingProvider>().clearUser();
@@ -117,11 +120,45 @@ class _AuthGateState extends State<_AuthGate> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    if (auth.isInitializing) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    return MainScreen(key: mainScreenKey);
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: auth.isInitializing
+          ? const _SplashView(key: ValueKey('splash'))
+          : MainScreen(key: mainScreenKey),
+    );
+  }
+}
+
+class _SplashView extends StatelessWidget {
+  const _SplashView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.primary,
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.directions_bus_rounded, size: 72, color: Colors.white),
+            const SizedBox(height: 12),
+            const Text(
+              '버스티켓',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 48),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              strokeWidth: 2.5,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
