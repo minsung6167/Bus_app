@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Terminal? _fromTerminal;
   Terminal? _toTerminal;
 
-  DateTime _selectedDate = DateTime.now();
+  DateTime _selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   List<Terminal> _terminals = [];
   bool _loadingTerminals = true;
   final ScrollController _scrollController = ScrollController();
@@ -138,11 +138,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _selectDate() async {
+    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 90)),
+      initialDate: _selectedDate.isBefore(today) ? today : _selectedDate,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 90)),
       locale: const Locale('ko', 'KR'),
     );
     if (picked != null) setState(() => _selectedDate = picked);
