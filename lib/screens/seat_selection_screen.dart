@@ -450,7 +450,7 @@ class SeatSelectionScreen extends StatelessWidget {
         final lang = ctx.watch<LanguageProvider>().langCode;
         final bus = provider.selectedBus!;
         final minutesLeft = bus.departureTime.difference(DateTime.now()).inMinutes;
-        final isOnsite = minutesLeft < 20;
+        final isOnsite = minutesLeft <= 20;
 
         return Scaffold(
           backgroundColor: AppColors.background,
