@@ -134,6 +134,10 @@ class _BusListScreenState extends State<BusListScreen> {
   }
 
   Future<void> _selectBus(Bus bus) async {
+    final now = DateTime.now();
+    if (bus.departureTime.isBefore(now)) return;
+    if (bus.departureTime.difference(now).inMinutes <= 20) return;
+
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
