@@ -284,14 +284,21 @@ class _BusListScreenState extends State<BusListScreen> {
           ),
           const Spacer(),
           if (!_loading)
-            Text(
-              '${_buses.length}편',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Builder(builder: (ctx) {
+              final now = DateTime.now();
+              final available = _buses.where((b) =>
+                b.departureTime.isAfter(now) &&
+                b.departureTime.difference(now).inMinutes > 20,
+              ).length;
+              return Text(
+                '${_buses.length}편 · 예매가능 $available편',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            }),
         ],
       ),
     );
