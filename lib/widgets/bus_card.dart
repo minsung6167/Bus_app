@@ -6,6 +6,7 @@ import '../l10n/terminal_names.dart';
 import '../models/bus_model.dart';
 import '../providers/booking_provider.dart';
 import '../providers/language_provider.dart';
+import '../services/time_service.dart';
 import '../theme/app_theme.dart';
 
 class BusCard extends StatelessWidget {
@@ -19,7 +20,7 @@ class BusCard extends StatelessWidget {
     final timeFormat = DateFormat('HH:mm');
     final priceFormat = NumberFormat('#,###');
     final remaining = context.watch<BookingProvider>().effectiveRemaining(bus);
-    final now = DateTime.now();
+    final now = TimeService.now();
     final isDeparted = bus.departureTime.isBefore(now);
     final minutesUntil = bus.departureTime.difference(now).inMinutes;
     final isOnsite = !isDeparted && minutesUntil <= 20;

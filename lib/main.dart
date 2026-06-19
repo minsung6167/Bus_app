@@ -11,6 +11,7 @@ import 'providers/favorite_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/main_screen.dart';
 import 'services/sleep_mode_task.dart';
+import 'services/time_service.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -20,6 +21,7 @@ void main() async {
     initForegroundTask();
   }
   await dotenv.load(fileName: '.env');
+  await TimeService.init();
   runApp(const BusApp());
 }
 

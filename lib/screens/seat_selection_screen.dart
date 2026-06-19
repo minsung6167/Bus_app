@@ -7,6 +7,7 @@ import '../models/seat_model.dart';
 import '../providers/booking_provider.dart';
 import '../providers/language_provider.dart';
 import '../theme/app_theme.dart';
+import '../services/time_service.dart';
 import '../widgets/seat_widget.dart';
 import 'booking_confirm_screen.dart';
 
@@ -449,7 +450,7 @@ class SeatSelectionScreen extends StatelessWidget {
       builder: (ctx, provider, _) {
         final lang = ctx.watch<LanguageProvider>().langCode;
         final bus = provider.selectedBus!;
-        final minutesLeft = bus.departureTime.difference(DateTime.now()).inMinutes;
+        final minutesLeft = bus.departureTime.difference(TimeService.now()).inMinutes;
         final isOnsite = minutesLeft <= 20;
 
         return Scaffold(

@@ -206,17 +206,18 @@ class BusApiService {
     return (total - occupied).clamp(0, total);
   }
 
-  // 형식: YYYYMMDDHHmm (12자리)
+  // 형식: YYYYMMDDHHmm (12자리), API 시간은 KST(UTC+9)
   static DateTime _parseTime(String? raw) {
     if (raw == null || raw.length < 12) return DateTime.now();
     try {
-      return DateTime(
+      // UTC로 변환 후 로컬 시간으로: 기기 타임존과 무관하게 KST 기준 정확
+      return DateTime.utc(
         int.parse(raw.substring(0, 4)),
         int.parse(raw.substring(4, 6)),
         int.parse(raw.substring(6, 8)),
-        int.parse(raw.substring(8, 10)),
+        int.parse(raw.substring(8, 10)) - 9,
         int.parse(raw.substring(10, 12)),
-      );
+      ).toLocal();
     } catch (_) {
       return DateTime.now();
     }

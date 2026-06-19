@@ -1,3 +1,4 @@
+import '../services/time_service.dart';
 import 'bus_model.dart';
 
 class Booking {
@@ -19,7 +20,7 @@ class Booking {
     required this.bookedAt,
   });
 
-  bool get isUpcoming => bus.departureTime.isAfter(DateTime.now());
+  bool get isUpcoming => bus.departureTime.isAfter(TimeService.now());
 
   Map<String, dynamic> toJson() => {
         'id': id,

@@ -8,6 +8,7 @@ import '../providers/auth_provider.dart';
 import '../providers/favorite_provider.dart';
 import '../providers/language_provider.dart';
 import '../services/bus_api_service.dart';
+import '../services/time_service.dart';
 import '../theme/app_theme.dart';
 import 'bus_list_screen.dart';
 import 'coupon_screen.dart';
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Terminal? _fromTerminal;
   Terminal? _toTerminal;
 
-  DateTime _selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime _selectedDate = DateTime(TimeService.now().year, TimeService.now().month, TimeService.now().day);
   List<Terminal> _terminals = [];
   bool _loadingTerminals = true;
   final ScrollController _scrollController = ScrollController();
@@ -138,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _selectDate() async {
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    final today = DateTime(TimeService.now().year, TimeService.now().month, TimeService.now().day);
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate.isBefore(today) ? today : _selectedDate,

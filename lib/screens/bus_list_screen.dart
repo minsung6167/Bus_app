@@ -8,6 +8,7 @@ import '../models/bus_model.dart';
 import '../providers/booking_provider.dart';
 import '../providers/language_provider.dart';
 import '../services/bus_api_service.dart';
+import '../services/time_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bus_card.dart';
 import 'seat_selection_screen.dart';
@@ -134,7 +135,7 @@ class _BusListScreenState extends State<BusListScreen> {
   }
 
   Future<void> _selectBus(Bus bus) async {
-    final now = DateTime.now();
+    final now = TimeService.now();
     if (bus.departureTime.isBefore(now)) return;
     if (bus.departureTime.difference(now).inMinutes <= 20) return;
 
@@ -285,7 +286,7 @@ class _BusListScreenState extends State<BusListScreen> {
           const Spacer(),
           if (!_loading)
             Builder(builder: (ctx) {
-              final now = DateTime.now();
+              final now = TimeService.now();
               final available = _buses.where((b) =>
                 b.departureTime.isAfter(now) &&
                 b.departureTime.difference(now).inMinutes > 20,
@@ -413,7 +414,7 @@ class _CustomDatePickerState extends State<_CustomDatePicker> {
 
   bool _isSelectable(int day) {
     final date = DateTime(_year, _month, day);
-    final today = DateTime.now();
+    final today = TimeService.now();
     final todayDate = DateTime(today.year, today.month, today.day);
     final maxDate = todayDate.add(const Duration(days: 60));
     return !date.isBefore(todayDate) && !date.isAfter(maxDate);
