@@ -25,7 +25,7 @@ style: |
 # 시외버스 통합 예약 앱
 ### 최종 발표
 
-최민성 &nbsp;|&nbsp; 2026-06-14
+최민성 &nbsp;|&nbsp; 2026-06-22
 
 ---
 
@@ -67,6 +67,11 @@ style: |
 
 ## 02. 문제 정의
 
+<div style="background:#1e3a8a; color:white; border-radius:10px; padding:14px 20px; margin-bottom:16px; font-size:1.0em; font-weight:bold; text-align:center;">
+  ⚠️ 핵심 문제 &nbsp;—&nbsp; 기존 버스 예매 앱들은 <u>예매 기능만</u> 제공<br>
+  <span style="font-size:0.85em; font-weight:normal; opacity:0.9;">현재 위치 확인을 위해 다른 앱을 따로 실행해야 하는 번거로움 발생</span>
+</div>
+
 | &nbsp; | 문제 상황 | 기존 방식 | **우리 앱** |
 |---|---|---|---|
 | <span class="tag" style="background:#1a56db;">위치</span> | 이동 중 현재 위치 확인 | 지도 앱 별도 실행 | 앱 내 실시간 지도 |
@@ -74,10 +79,6 @@ style: |
 | <span class="tag" style="background:#0891b2;">언어</span> | 외국인 이용 불편 | 한국어 전용 | 한·영·중·일 4개국어 |
 | <span class="tag" style="background:#059669;">좌석</span> | 혼잡도 파악 불가 | 예매 전 알 수 없음 | 혼잡도 예측 시각화 |
 | <span class="tag" style="background:#d97706;">발권</span> | 종이 발권 번거로움 | 창구·ATM 수령 | QR 모바일 발권 |
-
-<div class="box" style="margin-top:12px;">
-  <strong>핵심 문제:</strong> 기존 시외버스 앱은 <strong>예매 기능만</strong> 제공 → 승차 후 경험은 완전히 공백
-</div>
 
 <!--
 [대사]
@@ -94,16 +95,16 @@ style: |
 <div class="cols2">
 <div>
 
-**WBS 진행 현황** (전체 **95%** 완료)
+**WBS 진행 현황** (전체 **100%** 완료)
 
-| 영역 | 완료 | 완료율 |
+| 주차 | 영역 | 완료율 |
 |---|---|---|
-| 기반·인증·터미널 검색 | 20 / 20 | ✅ 100% |
-| 예매·결제·내역 | 19 / 19 | ✅ 100% |
-| GPS·지도·다국어 | 14 / 14 | ✅ 100% |
-| 부가기능·마이페이지 | 9 / 9 | ✅ 100% |
-| 테스트·배포 | 1 / 5 | 🔄 20% |
-| **전체** | **79 / 83** | **95%** |
+| 10~11주 | 기반·인증·터미널 검색 | ✅ 100% |
+| 12~13주 | 예매·결제·내역 | ✅ 100% |
+| 13~14주 | GPS·지도·다국어 | ✅ 100% |
+| 14주 | 부가기능·마이페이지 | ✅ 100% |
+| 15주 | 테스트·최종발표 | ✅ 100% |
+| **전체** | — | **✅ 100%** |
 
 </div>
 <div>
@@ -116,7 +117,7 @@ style: |
 | 상태관리 | Provider (ChangeNotifier) |
 | 로컬 저장 | SharedPreferences |
 | GPS·백그라운드 | geolocator + FlutterForegroundTask |
-| 지도·경로 | Google Maps + OSRM |
+| 지도 | Google Maps API |
 | 공공 API | 공공데이터포털 버스 노선 |
 | 다국어 | 한·영·중·일 (AppStrings) |
 
@@ -134,10 +135,10 @@ style: |
 | 12주차 | 5월 3주 | 핵심 기능 구현 **(중간 발표)** | ✅ 완료 |
 | 13주차 | 5월 4주 | UX 개선 · QR 고도화 · 챗봇 · 쿠폰 | ✅ 완료 |
 | 14주차 | 6월 1주 | 지도 기능 구현 · 다국어 완성 | ✅ 완료 |
-| 15주차 | 6월 2주 | 마무리 · 테스트 · **최종 발표** | 🔄 진행중 |
+| 15주차 | 6월 2주 | 마무리 · 테스트 · **최종 발표** | ✅ 완료 |
 
 <div class="box" style="margin-top:12px;">
-  Must 기능 <strong>전체 완료</strong> &nbsp;·&nbsp; Should 기능 <strong>전체 완료</strong> &nbsp;·&nbsp; 테스트/배포 진행중
+  Must 기능 <strong>전체 완료</strong> &nbsp;·&nbsp; Should 기능 <strong>전체 완료</strong> &nbsp;·&nbsp; 테스트 · 최종발표 <strong>완료</strong>
 </div>
 
 ---
@@ -317,51 +318,52 @@ BUS_API_KEY=공공데이터포털_발급_키
 
 ## 08. 빌드 & 배포 과정
 
-<div class="cols2">
-<div>
+<div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
 
-**빌드 명령어**
-
-```bash
-# 정적 분석 (경고 0건 확인)
-flutter analyze
-
-# Android Debug APK (테스트용)
-flutter build apk --debug
-
-# Android Release APK (배포용)
-flutter build apk --release
-
-# Google Play 제출용
-flutter build appbundle --release
-
-# iOS (Mac + Xcode 필요)
-flutter build ios --release
-```
-
+<div style="display:flex; align-items:stretch; gap:0;">
+  <div style="background:#1a56db; color:white; border-radius:8px 0 0 8px; padding:10px 18px; font-weight:bold; font-size:0.95em; display:flex; align-items:center; min-width:120px; justify-content:center; text-align:center;">STEP 1<br>정적 분석</div>
+  <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:0 8px 8px 0; padding:10px 18px; flex:1; display:flex; align-items:center; gap:16px;">
+    <code style="background:#dbeafe; padding:4px 10px; border-radius:4px;">flutter analyze</code>
+    <span style="color:#374151;">경고 0건 확인 → 코드 품질 검증</span>
+    <span style="margin-left:auto;">✅ 통과</span>
+  </div>
 </div>
-<div>
 
-**결과물 위치**
-
-```
-build/app/outputs/
-├── flutter-apk/
-│   ├── app-debug.apk
-│   └── app-release.apk   ← 제출용
-└── bundle/release/
-    └── app-release.aab   ← Play Store
-```
-
-**배포 전 체크리스트**
-
-- ✅ `flutter analyze` 경고 0건
-- ✅ `flutter test` 전체 통과
-- ✅ `.env` API 키 설정 확인
-- ✅ `pubspec.yaml` 버전 확인
-- ⬜ Release APK 최종 빌드
-
+<div style="display:flex; align-items:stretch; gap:0;">
+  <div style="background:#7c3aed; color:white; border-radius:8px 0 0 8px; padding:10px 18px; font-weight:bold; font-size:0.95em; display:flex; align-items:center; min-width:120px; justify-content:center; text-align:center;">STEP 2<br>테스트</div>
+  <div style="background:#f5f3ff; border:1px solid #ddd6fe; border-radius:0 8px 8px 0; padding:10px 18px; flex:1; display:flex; align-items:center; gap:16px;">
+    <code style="background:#ede9fe; padding:4px 10px; border-radius:4px;">flutter test</code>
+    <span style="color:#374151;">단위·위젯 테스트 전체 통과 확인</span>
+    <span style="margin-left:auto;">✅ 통과</span>
+  </div>
 </div>
+
+<div style="display:flex; align-items:stretch; gap:0;">
+  <div style="background:#0891b2; color:white; border-radius:8px 0 0 8px; padding:10px 18px; font-weight:bold; font-size:0.95em; display:flex; align-items:center; min-width:120px; justify-content:center; text-align:center;">STEP 3<br>Debug 빌드</div>
+  <div style="background:#ecfeff; border:1px solid #a5f3fc; border-radius:0 8px 8px 0; padding:10px 18px; flex:1; display:flex; align-items:center; gap:16px;">
+    <code style="background:#cffafe; padding:4px 10px; border-radius:4px;">flutter build apk --debug</code>
+    <span style="color:#374151;">에뮬레이터·테스트 기기 설치용</span>
+  </div>
+</div>
+
+<div style="display:flex; align-items:stretch; gap:0;">
+  <div style="background:#059669; color:white; border-radius:8px 0 0 8px; padding:10px 18px; font-weight:bold; font-size:0.95em; display:flex; align-items:center; min-width:120px; justify-content:center; text-align:center;">STEP 4<br>Release 빌드</div>
+  <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:0 8px 8px 0; padding:10px 18px; flex:1; display:flex; align-items:center; gap:16px;">
+    <code style="background:#dcfce7; padding:4px 10px; border-radius:4px;">flutter build apk --release</code>
+    <span style="color:#374151;">최적화된 배포용 APK 생성</span>
+    <span style="margin-left:auto; font-size:0.85em; color:#059669;">app-release.apk</span>
+  </div>
+</div>
+
+<div style="display:flex; align-items:stretch; gap:0;">
+  <div style="background:#d97706; color:white; border-radius:8px 0 0 8px; padding:10px 18px; font-weight:bold; font-size:0.95em; display:flex; align-items:center; min-width:120px; justify-content:center; text-align:center;">STEP 5<br>Play Store</div>
+  <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:0 8px 8px 0; padding:10px 18px; flex:1; display:flex; align-items:center; gap:16px;">
+    <code style="background:#fef3c7; padding:4px 10px; border-radius:4px;">flutter build appbundle --release</code>
+    <span style="color:#374151;">Google Play Store 제출용 AAB</span>
+    <span style="margin-left:auto; font-size:0.85em; color:#d97706;">app-release.aab</span>
+  </div>
+</div>
+
 </div>
 
 ---
