@@ -602,19 +602,19 @@ No issues found! (ran in 3.5s)
 
 <div class="cols3">
 <div class="card" style="text-align:center; padding:14px;">
-  <div style="font-size:1.8em; margin-bottom:8px;">🧳</div>
-  <strong>내국인 여행자</strong>
-  <p style="font-size:0.8em; color:#64748b; margin-top:6px;">수면 모드로<br>목적지 놓침 걱정 없이<br>장거리 이동</p>
+  <div style="font-size:1.8em; margin-bottom:8px;">😴</div>
+  <strong>수면 모드</strong>
+  <p style="font-size:0.8em; color:#64748b; margin-top:6px;">수면모드로 목적지 놓침<br>걱정 없이 장거리 이동</p>
+</div>
+<div class="card" style="text-align:center; padding:14px;">
+  <div style="font-size:1.8em; margin-bottom:8px;">🗺️</div>
+  <strong>지도 기능</strong>
+  <p style="font-size:0.8em; color:#64748b; margin-top:6px;">위치를 확인하고 싶을 때<br>앱 내부에서 한번에 해결<br>번거로움 해소</p>
 </div>
 <div class="card" style="text-align:center; padding:14px;">
   <div style="font-size:1.8em; margin-bottom:8px;">🌏</div>
   <strong>외국인 관광객</strong>
   <p style="font-size:0.8em; color:#64748b; margin-top:6px;">4개국어 지원으로<br>언어 장벽 없이<br>시외버스 이용</p>
-</div>
-<div class="card" style="text-align:center; padding:14px;">
-  <div style="font-size:1.8em; margin-bottom:8px;">📱</div>
-  <strong>디지털 전환</strong>
-  <p style="font-size:0.8em; color:#64748b; margin-top:6px;">종이 발권 → QR<br>모바일 발권으로<br>편의성 향상</p>
 </div>
 </div>
 
@@ -622,10 +622,10 @@ No issues found! (ran in 3.5s)
 
 **기대 효과**
 
-- 예매 → 탑승 → 도착까지 **앱 하나로 전 과정 완결**
-- GPS 수면 모드로 **장거리 이동 스트레스 해소**
-- 4개국어로 **외국인 관광 접근성** 향상
-- 공공 API 기반 **실제 노선 데이터** 제공 (신뢰성 확보)
+- 수면 모드로 **목적지 놓칠 걱정 없는** 장거리 이동 실현
+- 지도·위치 확인을 **앱 하나로 해결** → 다른 앱 전환 번거로움 제거
+- 한·영·중·일 4개국어로 **외국인 관광 접근성** 대폭 향상
+- 예매 → 탑승 → 도착까지 **전 과정을 하나의 앱에서 완결**
 
 ---
 
