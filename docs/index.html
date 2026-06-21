@@ -794,38 +794,31 @@ code { font-size: 0.76em; }
 .tag { display:inline-block; border-radius:4px; padding:2px 8px; font-size:0.75em; font-weight:600; color:white; }
 .card { background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px 14px; }
 ;" data-marpit-pagination-total="21">
-<h2 id="09-%EA%B5%AC%ED%98%84-%EB%B0%A9%EB%B2%95-%EC%84%A4%EB%AA%85--gps-%EC%88%98%EB%A9%B4-%EB%AA%A8%EB%93%9C">09. 구현 방법 설명 — GPS 수면 모드</h2>
-<p><strong>&quot;자다가 목적지 근처에 오면 자동으로 깨워준다&quot;</strong></p>
+<h2 id="09-gps-%EC%88%98%EB%A9%B4%EB%AA%A8%EB%93%9C">09. GPS 수면모드</h2>
 <div class="cols2">
-<div>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-dart"><span class="hljs-keyword">void</span> onRepeatEvent(<span class="hljs-built_in">DateTime</span> timestamp) <span class="hljs-keyword">async</span> {
-  <span class="hljs-keyword">final</span> pos = <span class="hljs-keyword">await</span> Geolocator
-    .getCurrentPosition(...);
-  <span class="hljs-keyword">final</span> dist = Geolocator.distanceBetween(
-    pos.latitude, pos.longitude,
-    _destLat!, _destLng!,
-  );
-  <span class="hljs-keyword">if</span> (dist &lt;= _alertMeters) {
-    FlutterForegroundTask
-      .sendDataToMain({<span class="hljs-string">&#x27;action&#x27;</span>: <span class="hljs-string">&#x27;wake_up&#x27;</span>});
-  }
-}
-</code></pre>
+<div style="display:flex; flex-direction:column; gap:12px; justify-content:center;">
+<div class="box">
+  <strong>동작 흐름</strong><br /><br />
+  티켓 상세 → 수면모드 ON<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br />
+  Foreground Service 시작 (화면 꺼져도 동작)<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br />
+  15초마다 GPS 위치 체크<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br />
+  목적지 반경 진입 감지 (2 / 5 / 10km 선택)<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br />
+  <strong>강한 진동으로 알림</strong>
 </div>
-<div>
-<p><strong>동작 흐름</strong></p>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>티켓 상세 → 수면모드 ON
-        ↓
- Foreground Service 시작
- (화면 꺼져도 계속 동작)
-        ↓
-  15초마다 GPS 위치 체크
-        ↓
-  목적지 반경 진입 감지
-  (2km / 5km / 10km 선택)
-        ↓
-    강한 진동으로 알림
-</code></pre>
+</div>
+<div style="display:flex; gap:12px; align-items:center; justify-content:center;">
+<div style="text-align:center;">
+  <img src="presentation/sleep_setting.png" style="height:400px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.18);" />
+  <div style="font-size:0.78em; color:#64748b; margin-top:6px;">거리 설정 화면</div>
+</div>
+<div style="text-align:center;">
+  <img src="presentation/sleep_running.png" style="height:400px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.18);" />
+  <div style="font-size:0.78em; color:#64748b; margin-top:6px;">실행 중 화면</div>
+</div>
 </div>
 </div>
 </section>

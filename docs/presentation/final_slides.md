@@ -368,46 +368,36 @@ BUS_API_KEY=공공데이터포털_발급_키
 
 ---
 
-## 09. 구현 방법 설명 — GPS 수면 모드
-
-**"자다가 목적지 근처에 오면 자동으로 깨워준다"**
+## 09. GPS 수면모드
 
 <div class="cols2">
-<div>
+<div style="display:flex; flex-direction:column; gap:12px; justify-content:center;">
 
-```dart
-void onRepeatEvent(DateTime timestamp) async {
-  final pos = await Geolocator
-    .getCurrentPosition(...);
-  final dist = Geolocator.distanceBetween(
-    pos.latitude, pos.longitude,
-    _destLat!, _destLng!,
-  );
-  if (dist <= _alertMeters) {
-    FlutterForegroundTask
-      .sendDataToMain({'action': 'wake_up'});
-  }
-}
-```
+<div class="box">
+  <strong>동작 흐름</strong><br><br>
+  티켓 상세 → 수면모드 ON<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+  Foreground Service 시작 (화면 꺼져도 동작)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+  15초마다 GPS 위치 체크<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+  목적지 반경 진입 감지 (2 / 5 / 10km 선택)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+  <strong>강한 진동으로 알림</strong>
+</div>
 
 </div>
-<div>
+<div style="display:flex; gap:12px; align-items:center; justify-content:center;">
 
-**동작 흐름**
+<div style="text-align:center;">
+  <img src="presentation/sleep_setting.png" style="height:400px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.18);">
+  <div style="font-size:0.78em; color:#64748b; margin-top:6px;">거리 설정 화면</div>
+</div>
 
-```
-티켓 상세 → 수면모드 ON
-        ↓
- Foreground Service 시작
- (화면 꺼져도 계속 동작)
-        ↓
-  15초마다 GPS 위치 체크
-        ↓
-  목적지 반경 진입 감지
-  (2km / 5km / 10km 선택)
-        ↓
-    강한 진동으로 알림
-```
+<div style="text-align:center;">
+  <img src="presentation/sleep_running.png" style="height:400px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.18);">
+  <div style="font-size:0.78em; color:#64748b; margin-top:6px;">실행 중 화면</div>
+</div>
 
 </div>
 </div>
