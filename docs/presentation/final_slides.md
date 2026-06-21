@@ -342,7 +342,8 @@ BUS_API_KEY=공공데이터포털_발급_키
   <div style="background:#0891b2; color:white; border-radius:8px 0 0 8px; padding:10px 18px; font-weight:bold; font-size:0.95em; display:flex; align-items:center; min-width:120px; justify-content:center; text-align:center;">STEP 3<br>Debug 빌드</div>
   <div style="background:#ecfeff; border:1px solid #a5f3fc; border-radius:0 8px 8px 0; padding:10px 18px; flex:1; display:flex; align-items:center; gap:16px;">
     <code style="background:#cffafe; padding:4px 10px; border-radius:4px;">flutter build apk --debug</code>
-    <span style="color:#374151;">에뮬레이터·테스트 기기 설치용</span>
+    <span style="color:#374151;">에뮬레이터 설치 · 동작 테스트 완료</span>
+    <span style="margin-left:auto;">✅ 통과</span>
   </div>
 </div>
 
