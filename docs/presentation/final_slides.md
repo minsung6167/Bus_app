@@ -56,6 +56,13 @@ style: |
 </div>
 </div>
 
+<!--
+[대사]
+시외버스를 타고 장거리 이동할 때, 불편한 점이 있으셨나요?
+저는 버스를 타면 지도 앱을 따로 켜야 하고, 자다가 내릴 곳을 놓칠까봐 걱정하고, 외국인 친구와 같이 탈 때 한국어 앱이라 혼자 설명해야 했습니다.
+이 모든 문제를 앱 하나로 해결하는 것이 저의 비전입니다.
+-->
+
 ---
 
 ## 02. 문제 정의
@@ -71,6 +78,14 @@ style: |
 <div class="box" style="margin-top:12px;">
   <strong>핵심 문제:</strong> 기존 시외버스 앱은 <strong>예매 기능만</strong> 제공 → 승차 후 경험은 완전히 공백
 </div>
+
+<!--
+[대사]
+기존 시외버스 앱은 예매는 되지만, 버스를 탄 이후의 경험은 완전히 공백입니다.
+자리에 앉으면 지도 앱을 따로 켜야 하고, 자다가 내릴 곳을 놓칠까봐 알람을 따로 맞춰야 합니다.
+외국인이라면 한국어 전용 앱 앞에서 막막합니다.
+저는 이 공백을 채우는 앱을 만들었습니다.
+-->
 
 ---
 
@@ -614,7 +629,71 @@ All tests passed!
 
 ---
 
-## 16. 마무리 & 향후 발전 방향
+## 16. AI Agent 활용 & 가산점 어필
+
+<div class="cols3">
+<div>
+
+**A. AI Agent 활용** `+1점`
+
+Claude Code (claude-sonnet-4-6)를 **개발 전 과정**에 활용
+
+- Flutter 코드 생성 · 수정 · 디버깅
+- ADR · WBS · 기획 문서 자동 생성
+- 다국어 4개국어 번역 자동화
+- `flutter analyze` 경고 즉시 수정
+
+</div>
+<div>
+
+**B. 본인만의 기법** `+2점`
+
+**`AGENTS.md` 단일 파일**로 통합
+
+```
+AGENTS.md
+├── 1. Agent 역할 정의
+├── 2. Skills (5가지 절차화)
+├── 3. Rules (Do / Don't)
+├── 4. Commands (모음)
+├── 5. 코드 이해 체크리스트
+├── 6. 프롬프트 패턴
+└── 7. Git 커밋 컨벤션
+```
+
+별도 정책 파일 필요 없이 **이 파일 하나**로 AI와 협업
+
+</div>
+<div>
+
+**C. LLM Wiki 암묵지** `+1점`
+
+`docs/llm-wiki.md` — 12개 항목
+
+| # | 교훈 |
+|---|---|
+| 001 | 에뮬레이터 DNS 우회 |
+| 002 | Provider addListener |
+| 003 | Transform 히트테스트 |
+| 004 | OSRM으로 Maps 대체 |
+| 006 | 결정적 난수 패턴 |
+| 010 | 현상 중심 프롬프트 |
+| ... | 총 12개 직접 경험 기록 |
+
+</div>
+</div>
+
+<!--
+[대사]
+가산점 항목 세 가지를 어필하겠습니다.
+첫 번째, AI Agent를 단순 코드 생성이 아닌 기획부터 문서화까지 전 과정에 활용했습니다.
+두 번째, AGENTS.md 파일 하나에 Agent 역할, 스킬, 규칙, 커맨드를 모두 통합해 관리하는 저만의 기법을 사용했습니다.
+세 번째, 개발 중 마주친 실제 문제와 해결법을 12개 항목의 LLM Wiki로 정리해 암묵지를 문서화했습니다.
+-->
+
+---
+
+## 마무리 & 향후 발전 방향
 
 <div class="cols2">
 <div>
@@ -652,25 +731,61 @@ All tests passed!
 
 ---
 
-## 17. 시연 데모
+## 18. 시연 데모
 
-<div style="display:flex; align-items:center; justify-content:center; height:80%; flex-direction:column; gap:20px;">
+**30초 시나리오** — "서울에서 부산 가는 버스, 자면서 안심하고 타기"
 
-<div style="text-align:center;">
-  <div style="font-size:2.4em; margin-bottom:12px;">🎬</div>
-  <div style="font-size:1.15em; font-weight:bold; color:#1a56db; margin-bottom:10px;">앱 시연 영상</div>
-  <p style="color:#64748b; font-size:0.88em; line-height:1.8;">
-    예매 전 과정 (검색 → 좌석 → 결제 → QR발권)<br>
-    GPS 수면 모드 동작<br>
-    실시간 지도 + 경로 확인<br>
-    4개국어 전환
-  </p>
+<div class="cols2">
+<div>
+
+**순서** (사용자 시나리오)
+
+| 초 | 화면 | 포인트 |
+|---|---|---|
+| 0~5s | 홈 → 터미널 선택 | 인기 TOP10 즉시 선택 |
+| 5~10s | 버스 목록 → 선택 | 혼잡도 색상 + 잔여석 |
+| 10~15s | 좌석 배치도 → 결제 | 배치도 시각화 |
+| 15~20s | 내 예매 → QR 발권 | 티켓 카드 → QR 코드 |
+| 20~25s | 수면모드 ON → 지도 | 위치 추적 시작 |
+| 25~30s | 언어 전환 (한→영) | 전체 화면 즉시 적용 |
+
+</div>
+<div style="display:flex; flex-direction:column; gap:10px;">
+
+<div class="box">
+  <strong>임팩트 포인트</strong><br>
+  수면 모드 ON 후 GPS 반경 진입 → <strong>진동으로 깨어남</strong><br>
+  <span style="font-size:0.85em; color:#64748b;">← 이게 이 앱의 핵심 차별점</span>
 </div>
 
-<!-- 영상을 받으면 아래 주석을 해제하고 위 내용을 제거하세요 -->
+<div class="good">
+  <strong>엣지 케이스도 보여줄 것</strong><br>
+  네트워크 OFF → Mock 데이터 자동 전환 (앱 중단 없음)
+</div>
+
+</div>
+</div>
+
 <!--
-<video src="../demo.mp4" controls style="width:90%; max-height:480px; border-radius:10px;"></video>
+[대사]
+지금부터 30초 시연을 보여드리겠습니다.
+서울남부에서 부산으로 가는 버스를 예약하고, 버스 안에서 자면서도 목적지 근처에 오면 자동으로 알림을 받는 전체 흐름을 보여드립니다.
 -->
+
+---
+
+<!-- 영상 슬라이드 (별도 화면으로 전환하거나 위 슬라이드와 합쳐서 사용) -->
+## 🎬 시연
+
+<div style="display:flex; align-items:center; justify-content:center; min-height:300px; flex-direction:column; gap:16px;">
+
+<div style="font-size:1.1em; font-weight:bold; color:#1a56db;">앱 시연 (Live / 영상)</div>
+
+<div style="background:#f8fafc; border:2px dashed #94a3b8; border-radius:12px; padding:20px 40px; text-align:center; color:#64748b; font-size:0.9em; line-height:2;">
+  검색 → 좌석 선택 → 결제 → QR 발권<br>
+  수면 모드 ON → GPS 감지 → 진동 알림<br>
+  실시간 지도 → 언어 전환 (한/영/중/일)
+</div>
 
 </div>
 
