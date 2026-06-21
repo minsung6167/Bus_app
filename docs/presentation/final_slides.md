@@ -464,15 +464,23 @@ List<SeatStatus> generateSeats(String busId, String date) {
 }
 ```
 
-<div class="cols2">
-<div class="good">
-✅ 동일 버스·날짜 → 항상 같은 좌석 배치<br>
-✅ 실 서비스 전환 시 이 함수만 교체하면 나머지 UI 그대로 동작
+<div class="good" style="margin-bottom:12px;">
+✅ 동일 버스·날짜 → 항상 같은 좌석 배치 &nbsp;·&nbsp; 실 서비스 전환 시 이 함수만 교체하면 나머지 UI 그대로 동작
 </div>
+
+<div class="cols2">
 <div class="warn">
-⚠️ <strong>문제 2 — 에뮬레이터 GPS 불가</strong><br>
-→ Android Studio Extended Controls<br>
-&nbsp;&nbsp; Location 탭에서 수동 좌표 입력으로 대응
+  <strong>⚠️ 문제 2 — 에뮬레이터 GPS 불가</strong><br><br>
+  <strong>문제 상황</strong><br>
+  에뮬레이터는 실제 GPS 칩이 없어 위치 정보를 수신할 수 없음<br>
+  → 수면 모드·지도 기능 테스트 불가
+</div>
+<div class="good">
+  <strong>✅ 대응 방안 — 수동 좌표 입력</strong><br><br>
+  Android Studio → 에뮬레이터 우측 <strong>⋮ → Location 탭</strong><br><br>
+  <code>Latitude &nbsp;: 37.5665 (서울)</code><br>
+  <code>Longitude : 126.9780</code><br><br>
+  → Send 버튼으로 원하는 좌표 수동 전송
 </div>
 </div>
 
