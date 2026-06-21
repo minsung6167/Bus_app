@@ -169,31 +169,9 @@ MainScreen
 **4개국어** 전환 — 전체 화면 즉시 적용
 
 </div>
-<div>
+<div style="display:flex; align-items:center; justify-content:center;">
 
-**디렉토리 구조**
-
-```
-lib/
-├── main.dart
-├── screens/        # 화면 (UI)
-│   ├── home/
-│   ├── booking/    # 예매·결제·좌석
-│   ├── mypage/     # 마이페이지·카드·쿠폰
-│   └── auth/       # 로그인·회원가입
-├── providers/      # 상태 관리
-│   ├── auth_provider.dart
-│   ├── booking_provider.dart
-│   ├── language_provider.dart
-│   └── card_provider.dart
-├── services/       # API·비즈니스 로직
-│   └── bus_api_service.dart
-├── models/         # 데이터 모델
-├── widgets/        # 공통 위젯
-├── data/           # Mock fallback 데이터
-├── theme/          # 색상·폰트 시스템
-└── l10n/           # 다국어 문자열
-```
+<img src="presentation/home_screenshot2.png" style="height:480px; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.18);">
 
 </div>
 </div>
