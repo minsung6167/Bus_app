@@ -82,15 +82,28 @@ docs/
 
 ---
 
-## 문서
+## 문서 (기획서 · 설계 · 운영)
 
-- [비전 & 목표](.planning/00-vision.md)
-- [요구사항 & MoSCoW](.planning/01-requirements.md)
-- [WBS](.planning/02-wbs.md)
-- [개발 일정](.planning/03-schedule.md)
-- [아키텍처 결정 기록](docs/ADR.md)
-- [개발 환경 설정](docs/setup.md)
-- [테스트 가이드](docs/testing.md)
+### 기획서 & 요구사항
+- [기획서 — 비전 & 목표](.planning/00-vision.md)
+- [요구사항 & MoSCoW 우선순위](.planning/01-requirements.md)
+
+### WBS & 일정
+- [WBS (Work Breakdown Structure)](.planning/02-wbs.md)
+- [개발 일정 (10~15주차)](.planning/04-schedule.md)
+
+### 아키텍처 & ADR
+- [아키텍처 다이어그램](docs/architecture.md)
+- [아키텍처 결정 기록 (ADR)](docs/ADR.md)
+- [ADR 상세 결정 파일](.planning/decisions/)
+
+### setup · deploy · testing
+- [개발 환경 설정 (setup)](docs/setup.md)
+- [빌드 & 배포 가이드 (deploy)](docs/deploy.md)
+- [테스트 가이드 (testing)](docs/testing.md)
+
+### AI Agent 정책
+- [AGENTS.md — AI Agent 운영 가이드](AGENTS.md)
 
 ---
 
