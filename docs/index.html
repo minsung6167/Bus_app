@@ -857,18 +857,14 @@ code { font-size: 0.76em; }
 .tag { display:inline-block; border-radius:4px; padding:2px 8px; font-size:0.75em; font-weight:600; color:white; }
 .card { background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px 14px; }
 ;" data-marpit-pagination-total="21">
-<h2 id="10-%EA%B5%AC%ED%98%84-%EB%B0%A9%EB%B2%95-%EC%84%A4%EB%AA%85--%EC%A7%80%EB%8F%84--%EC%B1%97%EB%B4%87">10. 구현 방법 설명 — 지도 &amp; 챗봇</h2>
-<div class="cols2">
+<h2 id="10-%EC%A7%80%EB%8F%84--%EC%B1%97%EB%B4%87">10. 지도 &amp; 챗봇</h2>
+<div style="display:flex; gap:16px; align-items:flex-start;">
+<div style="text-align:center; flex-shrink:0;">
+  <img src="presentation/map_screenshot.png" style="height:440px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.18);" />
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:14px;">
 <div>
-<p><strong>실시간 지도 (Google Maps + OSRM)</strong></p>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code>Geolocator → 현재 위치 취득
-        ↓
-출발·도착 터미널 마커 표시
-        ↓
-OSRM API → 실제 도로 경로 계산
-        ↓
-폴리라인 + 예상 소요시간 표시
-</code></pre>
+<p><strong>실시간 지도</strong></p>
 <table>
 <thead>
 <tr>
@@ -891,10 +887,6 @@ OSRM API → 실제 도로 경로 계산
 </tr>
 </tbody>
 </table>
-<ul>
-<li>OSRM은 오픈소스 — API 키 없음, 무료</li>
-<li>에뮬레이터 → Android Studio Location 탭으로 좌표 수동 설정</li>
-</ul>
 </div>
 <div>
 <p><strong>고객센터 챗봇 (FAQ 키워드 매칭)</strong></p>
@@ -915,10 +907,6 @@ OSRM API → 실제 도로 경로 계산
 <td>모바일 발권 사용법</td>
 </tr>
 <tr>
-<td>짐·수하물</td>
-<td>허용 수하물 안내</td>
-</tr>
-<tr>
 <td>언어·language</td>
 <td>언어 변경 방법</td>
 </tr>
@@ -929,9 +917,9 @@ OSRM API → 실제 도로 경로 계산
 </tbody>
 </table>
 <ul>
-<li>빠른 질문 버튼 원터치 선택</li>
-<li>4개 언어 전체 대응</li>
+<li>빠른 질문 버튼 원터치 선택 · 4개 언어 전체 대응</li>
 </ul>
+</div>
 </div>
 </div>
 </section>

@@ -404,22 +404,19 @@ BUS_API_KEY=공공데이터포털_발급_키
 
 ---
 
-## 10. 구현 방법 설명 — 지도 & 챗봇
+## 10. 지도 & 챗봇
 
-<div class="cols2">
+<div style="display:flex; gap:16px; align-items:flex-start;">
+
+<div style="text-align:center; flex-shrink:0;">
+  <img src="presentation/map_screenshot.png" style="height:440px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.18);">
+</div>
+
+<div style="flex:1; display:flex; flex-direction:column; gap:14px;">
+
 <div>
 
-**실시간 지도 (Google Maps + OSRM)**
-
-```
-Geolocator → 현재 위치 취득
-        ↓
-출발·도착 터미널 마커 표시
-        ↓
-OSRM API → 실제 도로 경로 계산
-        ↓
-폴리라인 + 예상 소요시간 표시
-```
+**실시간 지도**
 
 | 기술 | 역할 |
 |---|---|
@@ -427,10 +424,8 @@ OSRM API → 실제 도로 경로 계산
 | **OSRM** | 실제 도로 경로 계산 (선 그리기) |
 | **Geolocator** | 내 현재 위치 좌표 가져오기 |
 
-- OSRM은 오픈소스 — API 키 없음, 무료
-- 에뮬레이터 → Android Studio Location 탭으로 좌표 수동 설정
-
 </div>
+
 <div>
 
 **고객센터 챗봇 (FAQ 키워드 매칭)**
@@ -439,12 +434,12 @@ OSRM API → 실제 도로 경로 계산
 |---|---|
 | 취소·환불 | 예매 취소 방법·환불 정책 |
 | 발권·QR | 모바일 발권 사용법 |
-| 짐·수하물 | 허용 수하물 안내 |
 | 언어·language | 언어 변경 방법 |
 | 회원가입·로그인 | 비회원 예매 가능 여부 |
 
-- 빠른 질문 버튼 원터치 선택
-- 4개 언어 전체 대응
+- 빠른 질문 버튼 원터치 선택 · 4개 언어 전체 대응
+
+</div>
 
 </div>
 </div>
