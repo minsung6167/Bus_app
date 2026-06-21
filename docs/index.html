@@ -1025,7 +1025,7 @@ code { font-size: 0.76em; }
 .tag { display:inline-block; border-radius:4px; padding:2px 8px; font-size:0.75em; font-weight:600; color:white; }
 .card { background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px 14px; }
 ;" data-marpit-pagination-total="21">
-<h2 id="12-adr-%EC%9A%94%EC%95%BD-%EC%A7%88%EC%9D%98%EC%9D%91%EB%8B%B5-%EC%A4%80%EB%B9%84">12. ADR 요약 (질의응답 준비)</h2>
+<h2 id="adr-%EC%9A%94%EC%95%BD">ADR 요약</h2>
 <table>
 <thead>
 <tr>
@@ -1040,19 +1040,19 @@ code { font-size: 0.76em; }
 <td>ADR-001</td>
 <td>크로스플랫폼 프레임워크</td>
 <td><strong>Flutter</strong></td>
-<td>Skia 렌더링으로 iOS·Android 완전 동일 UI, 단일 코드베이스</td>
+<td>React Native는 네이티브 컴포넌트를 빌려 써 iOS·Android UI가 미묘하게 달라짐. Flutter는 자체 렌더링 엔진(Skia)으로 직접 그려 어떤 기기에서도 완전히 동일한 UI 제공</td>
 </tr>
 <tr>
 <td>ADR-002</td>
 <td>버스 목록 정렬 기준</td>
 <td><strong>출발 시간순 고정</strong></td>
-<td>사용자가 가장 먼저 확인하는 정보, 정렬 UI 추가 불필요</td>
+<td>사용자가 사용하는 핵심 화면, 정렬 기준 확립 필요 → 가장 보기 편한 출발 시간순 정렬 고정</td>
 </tr>
 <tr>
 <td>ADR-003</td>
 <td>실시간 좌석 조회</td>
 <td><strong>결정적 난수 시뮬레이션</strong></td>
-<td>공개 API 없음·B2B 불가 → seed 기반으로 일관성 확보</td>
+<td>독점으로 인한 공개 API 없음·B2B 불가 → seed 기반으로 일관성 확보</td>
 </tr>
 <tr>
 <td>ADR-004</td>
