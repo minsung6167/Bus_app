@@ -537,9 +537,11 @@ No issues found! (ran in 3.5s)
 <div class="cols2">
 <div>
 
-**단위 테스트 — `flutter test` (자동)**
+<div style="font-size:0.82em; color:#1a56db; font-weight:bold; margin-bottom:6px;">🤖 AI (Claude Code)</div>
 
-<div class="good" style="padding:10px 14px; line-height:2;">
+**단위 테스트 — `flutter test`**
+
+<div class="good" style="padding:8px 12px; line-height:1.9; font-size:0.88em;">
 
 ✅ HomeScreen 렌더링<br>
 ✅ BusListScreen 카드 렌더링<br>
@@ -549,22 +551,45 @@ No issues found! (ran in 3.5s)
 
 </div>
 
+<br>
+
+**통합 테스트 — E2E 시나리오**
+
+<div class="good" style="padding:8px 12px; line-height:1.9; font-size:0.88em;">
+
+✅ 앱 실행 → 홈 화면 정상 로딩<br>
+✅ 터미널 선택 → 버스 목록 조회<br>
+✅ 좌석 선택 → 결제 → 예매 완료<br>
+✅ 네트워크 없음 → Mock 자동 전환
+
+</div>
+
 </div>
 <div>
 
-**통합 테스트 — 직접 시나리오 검증**
+<div style="font-size:0.82em; color:#7c3aed; font-weight:bold; margin-bottom:6px;">👤 직접 수동 테스트</div>
 
-<div style="line-height:2; font-size:0.9em;">
+**단위 테스트 — 화면별 기능 확인**
 
-✅ 앱 실행 → 홈 화면 정상 로딩<br>
-✅ 서울남부 → 부산종합 버스 조회<br>
-✅ 좌석 선택 → 결제 → 예매 완료<br>
+<div style="background:#f5f3ff; border-left:4px solid #7c3aed; border-radius:6px; padding:8px 12px; line-height:1.9; font-size:0.88em;">
+
 ✅ 예매 내역 QR 발권 확인<br>
-✅ 수면모드 ON → GPS 감지 → 진동<br>
 ✅ 언어 전환 한→영→중→일 전체 적용<br>
-✅ 네트워크 없음 → Mock 자동 전환<br>
 ✅ 비로그인 예약 → 로그인 유도<br>
 ✅ 잘못된 카드 입력 → 유효성 오류
+
+</div>
+
+<br>
+
+**통합 테스트 — 사용자 시나리오**
+
+<div style="background:#f5f3ff; border-left:4px solid #7c3aed; border-radius:6px; padding:8px 12px; line-height:1.9; font-size:0.88em;">
+
+✅ 서울남부 → 부산종합 전체 예매 흐름<br>
+✅ 수면모드 ON → GPS 감지 → 진동 알림<br>
+✅ 즐겨찾기 추가 → 재선택 확인<br>
+✅ 쿠폰 적용 → 할인 금액 반영 확인
 
 </div>
 
