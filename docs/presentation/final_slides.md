@@ -558,40 +558,36 @@ No issues found! (ran in 3.5s)
 <div class="cols2">
 <div>
 
-**위젯 테스트 (Widget Test)**
+**단위 테스트 — `flutter test` (자동)**
 
-| 대상 화면 | 확인 내용 |
-|---|---|
-| HomeScreen | 출발·도착 선택 버튼 렌더링 |
-| BusListScreen | 버스 목록 카드 렌더링 |
-| SeatSelectionScreen | 좌석 배치도 렌더링 |
-| BookingConfirmScreen | 결제 수단 선택 UI 렌더링 |
+<div class="good" style="padding:10px 14px; line-height:2;">
 
-```bash
-$ flutter test
-All tests passed!
-```
+✅ HomeScreen 렌더링<br>
+✅ BusListScreen 카드 렌더링<br>
+✅ SeatSelectionScreen 좌석 배치도<br>
+✅ BookingConfirmScreen 결제 UI<br>
+<span style="color:#16a34a; font-weight:bold;">All tests passed!</span>
+
+</div>
 
 </div>
 <div>
 
-**통합 테스트 (Integration Test)**
-전체 예매 흐름을 실제 앱에서 End-to-End 검증
+**통합 테스트 — 직접 시나리오 검증**
 
-```
-1. 앱 실행 → 홈 화면 렌더링 확인
-2. 서울남부 → 부산종합 선택
-3. 날짜 선택 → 버스 목록 조회 (API 연동)
-4. 버스 선택 → 좌석 선택 → 결제 완료
-5. 예매 내역 탭 → QR 발권 확인
-6. 수면모드 ON → GPS 감지 → 진동 알림
-7. 언어 전환 (한→영→중→일) 전체 화면 검증
-```
+<div style="line-height:2; font-size:0.9em;">
 
-**엣지 케이스 검증**
-- ✅ 네트워크 없음 → fallback Mock 자동 전환
-- ✅ 비로그인 예약 시도 → 로그인 유도 화면
-- ✅ 잘못된 카드 번호 → 유효성 오류 메시지
+✅ 앱 실행 → 홈 화면 정상 로딩<br>
+✅ 서울남부 → 부산종합 버스 조회<br>
+✅ 좌석 선택 → 결제 → 예매 완료<br>
+✅ 예매 내역 QR 발권 확인<br>
+✅ 수면모드 ON → GPS 감지 → 진동<br>
+✅ 언어 전환 한→영→중→일 전체 적용<br>
+✅ 네트워크 없음 → Mock 자동 전환<br>
+✅ 비로그인 예약 → 로그인 유도<br>
+✅ 잘못된 카드 입력 → 유효성 오류
+
+</div>
 
 </div>
 </div>
