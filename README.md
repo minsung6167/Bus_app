@@ -1,4 +1,4 @@
-# 시외버스 예약 앱
+# 시외버스 예약 앱 &nbsp;·&nbsp; [발표자료](https://minsung6167.github.io/Bus_app/)
 
 Flutter 기반 시외버스 예약 모바일 앱 — 졸업 작품
 
